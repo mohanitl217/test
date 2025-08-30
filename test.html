@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+</head>
+<body>
+    <h1>Debug Test</h1>
+    <button onclick="testConnection()">Test Apps Script</button>
+    <div id="result"></div>
+
+    <script>
+        // REPLACE THIS URL WITH YOUR ACTUAL APPS SCRIPT URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5W3gd75FUr-bCcvshAqJWZ7tJDpw54llIdpzM6lUTCOcs255oEwoRfgYrhlcHYxJ1/exec';
+        
+        async function testConnection() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Testing...</p>';
+            
+            console.log('Testing URL:', SCRIPT_URL);
+            
+            try {
+                const response = await fetch(SCRIPT_URL);
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                const text = await response.text();
+                console.log('Response text:', text);
+                
+                const data = JSON.parse(text);
+                
+                resultDiv.innerHTML = `
+                    <h3>✅ Success!</h3>
+                    <p><strong>Message:</strong> ${data.message}</p>
+                    <p><strong>Time:</strong> ${data.timestamp}</p>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                `;
+                
+            } catch (error) {
+                console.error('Full error:', error);
+                
+                resultDiv.innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>URL tested:</strong> ${SCRIPT_URL}</p>
+                    <p>Check browser console for more details.</p>
+                `;
+            }
+        }
+        
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            console.log('Page loaded, testing connection...');
+            testConnection();
+        });
+    </script>
+</body>
+</html>
