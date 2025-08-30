@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Web App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .status.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .data-display {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .data-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        button:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My Web App</h1>
+        
+        <form id="dataForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+            </div>
+            
+            <div class="btn-group">
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    Submit Data
+                </button>
+                <button type="button" class="btn-secondary" id="loadBtn">
+                    Load Data
+                </button>
+            </div>
+        </form>
+        
+        <div id="status" class="status"></div>
+        <div id="dataDisplay" class="data-display" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Replace this with your actual Google Apps Script Web App URL
+        const BACKEND_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+        
+        const form = document.getElementById('dataForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadBtn = document.getElementById('loadBtn');
+        const status = document.getElementById('status');
+        const dataDisplay = document.getElementById('dataDisplay');
+
+        // Show status message
+        function showStatus(message, type = 'success') {
+            status.textContent = message;
+            status.className = `status ${type} show`;
+            setTimeout(() => {
+                status.classList.remove('show');
+            }, 5000);
+        }
+
+        // Show loading state
+        function setLoading(button, isLoading) {
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = '<span class="loading"></span>Processing...';
+            } else {
+                button.disabled = false;
+                if (button === submitBtn) {
+                    button.textContent = 'Submit Data';
+                } else {
+                    button.textContent = 'Load Data';
+                }
+            }
+        }
+
+        // Submit form data to backend
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            setLoading(submitBtn, true);
+            
+            const formData = {
+                action: 'saveData',
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value
+            };
+
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('Data submitted successfully!', 'success');
+                    form.reset();
+                } else {
+                    showStatus(result.error || 'Submission failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('Network error. Please try again.', 'error');
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        });
+
+        // Load data from backend
+        loadBtn.addEventListener('click', async () => {
+            setLoading(loadBtn, true);
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}?action=getData`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    displayData(result.data);
+                    showStatus('Data loaded successfully!', 'success');
+                } else {
+                    showStatus(result.error || 'Failed to load data', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('Network error. Please try again.', 'error');
+            } finally {
+                setLoading(loadBtn, false);
+            }
+        });
+
+        // Display data in UI
+        function displayData(data) {
+            if (!data || data.length === 0) {
+                dataDisplay.innerHTML = '<p>No data found.</p>';
+            } else {
+                const html = data.map(item => `
+                    <div class="data-item">
+                        <strong>Name:</strong> ${item.name || 'N/A'}<br>
+                        <strong>Email:</strong> ${item.email || 'N/A'}<br>
+                        <strong>Message:</strong> ${item.message || 'N/A'}
+                    </div>
+                `).join('');
+                dataDisplay.innerHTML = html;
+            }
+            
+            dataDisplay.style.display = 'block';
+        }
+
+        // Test backend connection on page load
+        async function testConnection() {
+            try {
+                const response = await fetch(`${BACKEND_URL}?action=health`);
+                const result = await response.json();
+                
+                if (result.status === 'ok') {
+                    console.log('✅ Backend connection successful');
+                } else {
+                    console.warn('⚠️ Backend responded but may have issues');
+                }
+            } catch (error) {
+                console.error('❌ Backend connection failed:', error);
+                showStatus('Backend connection failed. Please check your configuration.', 'error');
+            }
+        }
+
+        // Test connection when page loads
+        window.addEventListener('load', testConnection);
+    </script>
+</body>
+</html>
