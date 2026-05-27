@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>English · Typing Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/base.css" />
+  <link rel="stylesheet" href="../../css/test.css" />
+  <link rel="stylesheet" href="../../css/english.css" />
+</head>
+<body class="theme-english-page">
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../../index.html" class="brand"><span class="brand-mark">T</span>TypeMaster</a>
+      <div class="nav-links">
+        <a href="../../index.html">Home</a>
+        <a href="learn.html">← Learn first</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="test-shell">
+    <div class="test-head">
+      <div>
+        <h1>English Typing Test</h1>
+        <div class="duration-picker" style="margin-top:8px;">
+          <button data-dur="30">30s</button>
+          <button class="active" data-dur="60">60s</button>
+          <button data-dur="120">2m</button>
+          <button data-dur="300">5m</button>
+        </div>
+      </div>
+      <div class="lesson-pick">
+        <label class="label" style="margin:0;">Passage:</label>
+        <select id="lesson-select"></select>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat"><div class="num" id="stat-wpm">0</div><div class="lbl">WPM</div></div>
+      <div class="stat"><div class="num" id="stat-acc">100%</div><div class="lbl">Accuracy</div></div>
+      <div class="stat danger"><div class="num" id="stat-err">0</div><div class="lbl">Errors</div></div>
+      <div class="stat warn"><div class="num" id="stat-time">60s</div><div class="lbl">Time left</div></div>
+    </div>
+
+    <div class="test-card">
+      <div id="target" class="target-text"></div>
+      <input id="input" class="typing-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Click here and start typing — the timer begins on first keystroke." />
+      <div class="controls">
+        <button id="restart-btn" class="btn">Restart</button>
+        <button id="start-btn" class="btn btn-solid">Focus input</button>
+        <a href="learn.html" class="btn">Back to learn</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="result-modal" class="result-modal">
+    <div class="result-card">
+      <h2>Test complete</h2>
+      <div class="big" id="result-wpm">0</div>
+      <div style="color:var(--text-muted);font-weight:600;">Words per minute</div>
+      <div class="row">
+        <div><strong id="result-acc">0%</strong><span>Accuracy</span></div>
+        <div><strong id="result-err">0</strong><span>Errors</span></div>
+        <div><strong>5 chars</strong><span>= 1 word</span></div>
+      </div>
+      <button id="result-close" class="btn btn-solid" style="width:100%;">Done</button>
+    </div>
+  </div>
+
+  <script>window.TEST_CONFIG = { section: 'english', mode: 'test' };</script>
+  <script src="../../js/test.js"></script>
+</body>
+</html>

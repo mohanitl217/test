@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>English · Learn Typing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/base.css" />
+  <link rel="stylesheet" href="../../css/learn.css" />
+  <link rel="stylesheet" href="../../css/english.css" />
+</head>
+<body class="theme-english-page">
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../../index.html" class="brand"><span class="brand-mark">T</span>TypeMaster</a>
+      <div class="nav-links">
+        <a href="../../index.html">Home</a>
+        <a href="test.html">Take Test →</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="exercise-shell">
+    <div class="exercise-head">
+      <div>
+        <h1>English · Learn Typing</h1>
+        <div class="subtitle">Watch the highlighted letter, type it, and the next one lights up.</div>
+      </div>
+      <div class="lesson-pick">
+        <label class="label" style="margin:0;">Lesson:</label>
+        <select id="lesson-select"></select>
+        <span class="label" style="margin:0;">Accuracy: <span id="accuracy" style="color:var(--brand);font-weight:700;">100%</span></span>
+      </div>
+    </div>
+
+    <div class="learn-card">
+      <div class="progress-bar"><span id="progress-bar"></span></div>
+      <div id="target" class="target-text"></div>
+      <input id="input" class="typing-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Start typing here…" />
+      <div class="next-key-hint">
+        <span class="key" id="next-key">A</span>
+        <span class="label">Next key to press</span>
+      </div>
+      <div class="controls">
+        <button id="reset-btn" class="btn">Restart lesson</button>
+        <a href="test.html" class="btn btn-solid">Ready? Take a test →</a>
+      </div>
+    </div>
+  </main>
+
+  <script>window.LEARN_CONFIG = { section: 'english', mode: 'learn' };</script>
+  <script src="../../js/learn.js"></script>
+</body>
+</html>

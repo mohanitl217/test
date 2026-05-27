@@ -1,0 +1,47 @@
+/* KrutiDev section theme - warm amber, traditional feel.
+   IMPORTANT: KrutiDev is a non-Unicode legacy font. We render its glyphs
+   via the Kruti Dev web font when available, falling back to Devanagari. */
+@font-face {
+  font-family: 'Kruti Dev 010';
+  src: local('Kruti Dev 010');
+  font-display: swap;
+}
+
+.theme-krutidev-page {
+  --brand: #d97706;
+  --brand-2: #ef4444;
+  background:
+    radial-gradient(800px 400px at 100% 0%, rgba(245,158,11,.08), transparent 60%),
+    var(--surface-alt);
+}
+.theme-krutidev-page .target-text {
+  font-family: 'Kruti Dev 010', 'Noto Sans Devanagari', serif;
+  font-size: clamp(22px, 2.6vw, 26px);
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #78350f;
+}
+.theme-krutidev-page .typing-input {
+  font-family: 'Kruti Dev 010', 'Noto Sans Devanagari', serif;
+  font-size: 22px;
+}
+.theme-krutidev-page .learn-card,
+.theme-krutidev-page .test-card {
+  border-top: 5px solid #d97706;
+}
+.theme-krutidev-page .nav-inner .brand-mark {
+  background: linear-gradient(135deg, #d97706, #ef4444);
+}
+.theme-krutidev-page .next-key-hint {
+  background: linear-gradient(135deg, #fef3c7, #fee2e2);
+  border-color: #fbbf24;
+}
+.theme-krutidev-page .legacy-note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #fffbeb;
+  border: 1px dashed #fde68a;
+  color: #92400e;
+  border-radius: 10px;
+  font-size: 13px;
+}

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Number Typing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/base.css" />
+  <link rel="stylesheet" href="../../css/learn.css" />
+  <link rel="stylesheet" href="../../css/english.css" />
+  <style>
+    /* Numpad-themed visuals */
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-width: 240px;
+      margin: 18px auto 0;
+    }
+    .numpad .key {
+      background: white;
+      border: 1px solid var(--border);
+      border-bottom-width: 3px;
+      border-radius: 10px;
+      padding: 14px 0;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--text-muted);
+    }
+    .numpad .key.hot { background: var(--brand); color: white; border-color: var(--brand); }
+    .theme-english-page.theme-number .target-text {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-color: #1e293b;
+      font-size: 24px;
+      letter-spacing: 2px;
+    }
+    .theme-number .target-text .ch.done { color: #4ade80; }
+    .theme-number .target-text .ch.cur { background: #2563eb; color: white; outline-color: #60a5fa; }
+  </style>
+</head>
+<body class="theme-english-page theme-number">
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../../index.html" class="brand"><span class="brand-mark">T</span>TypeMaster</a>
+      <div class="nav-links">
+        <a href="../../index.html">Home</a>
+        <a href="learn.html">Letters</a>
+        <a href="test.html">Take Test</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="exercise-shell">
+    <div class="exercise-head">
+      <div>
+        <h1>Number Typing</h1>
+        <div class="subtitle">Build muscle memory for the numeric row and numpad.</div>
+      </div>
+      <div class="lesson-pick">
+        <label class="label" style="margin:0;">Drill:</label>
+        <select id="lesson-select"></select>
+        <span class="label" style="margin:0;">Accuracy: <span id="accuracy" style="color:var(--brand);font-weight:700;">100%</span></span>
+      </div>
+    </div>
+
+    <div class="learn-card">
+      <div class="progress-bar"><span id="progress-bar"></span></div>
+      <div id="target" class="target-text"></div>
+      <input id="input" class="typing-input" inputmode="numeric" autocomplete="off" placeholder="Type the digits…" />
+
+      <div class="numpad" id="numpad-vis">
+        <div class="key">7</div><div class="key">8</div><div class="key">9</div>
+        <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+        <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+        <div class="key" style="grid-column:span 2;">0</div><div class="key">.</div>
+      </div>
+
+      <div class="next-key-hint">
+        <span class="key" id="next-key">1</span>
+        <span class="label">Next digit to press</span>
+      </div>
+      <div class="controls">
+        <button id="reset-btn" class="btn">Restart drill</button>
+      </div>
+    </div>
+  </main>
+
+  <script>window.LEARN_CONFIG = { section: 'english', mode: 'number' };</script>
+  <script src="../../js/learn.js"></script>
+  <script>
+    // Highlight the current digit on the visual numpad
+    const next = document.getElementById('next-key');
+    const obs = new MutationObserver(() => {
+      const v = next.textContent.trim();
+      document.querySelectorAll('#numpad-vis .key').forEach(k => {
+        k.classList.toggle('hot', k.textContent.trim() === v);
+      });
+    });
+    obs.observe(next, { childList: true, characterData: true, subtree: true });
+  </script>
+</body>
+</html>
