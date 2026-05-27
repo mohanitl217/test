@@ -1,0 +1,10 @@
+[
+  {
+    "id": "u1",
+    "name": "Administrator",
+    "email": "admin@typing.local",
+    "password": "scrypt$fcfd278fbb360d2a37a4c6f4f2ecb6d4$85cb96fc7d6a628676f5eb0dcfcae92909142f8e9502f903d752556ea6d23b3bb170d5da2c62a1a8bc152a6cf0c716ef74c70730dedbec376371625e4cfa95dd",
+    "role": "admin",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  }
+]

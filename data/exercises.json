@@ -1,0 +1,90 @@
+[
+  {
+    "id": "e1",
+    "section": "english",
+    "mode": "learn",
+    "title": "Home Row Basics",
+    "content": "asdf jkl; asdf jkl; sad lad fall jaks asks dad fad lass",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  },
+  {
+    "id": "e2",
+    "section": "english",
+    "mode": "test",
+    "title": "Quick Brown Fox",
+    "content": "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  },
+  {
+    "id": "e3",
+    "section": "english",
+    "mode": "number",
+    "title": "Number Drill",
+    "content": "12345 67890 1029 3847 5566 7788 9900 1122 3344 5566",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  },
+  {
+    "id": "h1",
+    "section": "hindi-krutidev",
+    "mode": "learn",
+    "title": "अभ्यास 1",
+    "content": "dk[k Mky Hkkjr esjs ns'k dk uke gSA ge lc ,d gSaA",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  },
+  {
+    "id": "h2",
+    "section": "hindi-krutidev",
+    "mode": "test",
+    "title": "परीक्षण 1",
+    "content": "fnYyh Hkkjr dh jkt/kkuh gSA ;gk¡ cgqr lkjs ,sfrgkfld LFky gSaA",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  },
+  {
+    "id": "m1",
+    "section": "hindi-mangal-gail",
+    "mode": "learn",
+    "title": "GAIL अभ्यास 1",
+    "content": "भारत मेरा देश है। हम सब भारतवासी हैं।",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  },
+  {
+    "id": "m2",
+    "section": "hindi-mangal-gail",
+    "mode": "test",
+    "title": "GAIL परीक्षण 1",
+    "content": "दिल्ली भारत की राजधानी है। यहाँ बहुत सारे ऐतिहासिक स्थल हैं।",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  },
+  {
+    "id": "m3",
+    "section": "hindi-mangal-inscript",
+    "mode": "learn",
+    "title": "INSCRIPT अभ्यास 1",
+    "content": "सूरज पूरब दिशा से उगता है और पश्चिम में अस्त होता है।",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  },
+  {
+    "id": "m4",
+    "section": "hindi-mangal-inscript",
+    "mode": "test",
+    "title": "INSCRIPT परीक्षण 1",
+    "content": "विद्या ददाति विनयं विनयाद् याति पात्रताम्। पात्रत्वात् धनमाप्नोति धनात् धर्मं ततः सुखम्।",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  },
+  {
+    "id": "m5",
+    "section": "hindi-mangal-cbi",
+    "mode": "learn",
+    "title": "CBI अभ्यास 1",
+    "content": "गंगा भारत की पवित्र नदी है। यह हिमालय से निकलती है।",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  },
+  {
+    "id": "m6",
+    "section": "hindi-mangal-cbi",
+    "mode": "test",
+    "title": "CBI परीक्षण 1",
+    "content": "भारतीय संस्कृति विश्व की प्राचीनतम संस्कृतियों में से एक है। यह विविधता में एकता का प्रतीक है।",
+    "createdAt": "2026-05-27T17:51:26.494Z"
+  }
+]

@@ -1,10 +1,9 @@
-// Generic Test-mode typing engine with timer + WPM/accuracy.
+// Test-mode typing engine with timer + WPM/accuracy (uses window.api).
 // Page sets `window.TEST_CONFIG = { section: '...', mode: 'test' }` before this script.
 (function () {
   const cfg = window.TEST_CONFIG || { section: 'english', mode: 'test' };
-
   const targetEl = document.getElementById('target');
-  const inputEl  = document.getElementById('input');
+  const inputEl = document.getElementById('input');
   const lessonSelect = document.getElementById('lesson-select');
   const wpmEl = document.getElementById('stat-wpm');
   const accEl = document.getElementById('stat-acc');
@@ -26,8 +25,11 @@
   let errorCount = 0;
 
   async function loadExercises() {
-    const res = await fetch(`/api/exercises?section=${encodeURIComponent(cfg.section)}&mode=${encodeURIComponent(cfg.mode)}`);
-    exercises = await res.json();
+    try {
+      exercises = await api.listExercises(cfg.section, cfg.mode);
+    } catch (e) {
+      exercises = [];
+    }
     if (!exercises.length) {
       targetEl.textContent = 'No tests available yet. Ask an admin to add some.';
       lessonSelect.innerHTML = '<option>-- empty --</option>';
@@ -73,7 +75,6 @@
   function updateStats() {
     const elapsed = durationSec - timeLeft;
     const minutes = Math.max(elapsed, 1) / 60;
-    // Standard WPM: chars / 5 / minutes
     const wpm = Math.round((correctChars / 5) / minutes);
     const acc = totalChars ? Math.round((correctChars / totalChars) * 100) : 100;
     wpmEl.textContent = isFinite(wpm) && wpm >= 0 ? wpm : 0;
@@ -122,7 +123,6 @@
     resultModal.classList.add('show');
   }
 
-  // Duration picker
   document.querySelectorAll('.duration-picker button').forEach((b) =>
     b.addEventListener('click', () => {
       document.querySelectorAll('.duration-picker button').forEach((x) => x.classList.remove('active'));

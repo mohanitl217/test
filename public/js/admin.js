@@ -1,4 +1,4 @@
-// Admin dashboard logic
+// Admin dashboard - uses window.api (with static-mode fallback)
 const token = localStorage.getItem('token');
 const user = JSON.parse(localStorage.getItem('user') || 'null');
 
@@ -7,7 +7,6 @@ if (!token || !user || user.role !== 'admin') {
   location.href = 'login.html';
 }
 
-// Logout
 document.getElementById('logout').addEventListener('click', () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
@@ -27,7 +26,6 @@ navLinks.forEach((n) =>
   })
 );
 
-// Toast helper
 function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -35,31 +33,12 @@ function toast(msg) {
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-async function api(url, opts = {}) {
-  const res = await fetch(url, {
-    ...opts,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + token,
-      ...(opts.headers || {}),
-    },
-  });
-  if (res.status === 401) {
-    alert('Session expired.');
-    location.href = 'login.html';
-    return;
-  }
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Error');
-  return data;
-}
-
 // USERS
 async function loadUsers() {
   const tbody = document.getElementById('users-tbody');
   tbody.innerHTML = '<tr><td colspan="5">Loading…</td></tr>';
   try {
-    const users = await api('/api/admin/users');
+    const users = await api.adminListUsers();
     if (!users.length) { tbody.innerHTML = '<tr><td colspan="5">No users yet.</td></tr>'; return; }
     tbody.innerHTML = users.map((u) => `
       <tr>
@@ -86,10 +65,10 @@ async function onUserAction(e) {
   try {
     if (act === 'del') {
       if (!confirm('Delete this user?')) return;
-      await api('/api/admin/users/' + id, { method: 'DELETE' });
+      await api.adminDeleteUser(id);
       toast('User deleted');
     } else if (act === 'role') {
-      await api('/api/admin/users/' + id + '/role', { method: 'PATCH', body: JSON.stringify({ role }) });
+      await api.adminSetUserRole(id, role);
       toast('Role updated');
     }
     loadUsers();
@@ -114,7 +93,7 @@ async function loadExercises() {
   const tbody = document.getElementById('ex-tbody');
   tbody.innerHTML = '<tr><td colspan="5">Loading…</td></tr>';
   try {
-    let list = await api('/api/admin/exercises');
+    let list = await api.adminListExercises();
     if (exerciseFilter) list = list.filter((e) => e.section === exerciseFilter);
     if (!list.length) { tbody.innerHTML = '<tr><td colspan="5">No exercises.</td></tr>'; return; }
     tbody.innerHTML = list.map((ex) => `
@@ -128,7 +107,7 @@ async function loadExercises() {
     `).join('');
     tbody.querySelectorAll('button').forEach((b) => b.addEventListener('click', async (e) => {
       if (!confirm('Delete this exercise?')) return;
-      await api('/api/admin/exercises/' + e.currentTarget.dataset.id, { method: 'DELETE' });
+      await api.adminDeleteExercise(e.currentTarget.dataset.id);
       toast('Exercise deleted');
       loadExercises();
     }));
@@ -141,14 +120,11 @@ document.getElementById('add-exercise').addEventListener('submit', async (e) => 
   e.preventDefault();
   const fd = new FormData(e.currentTarget);
   try {
-    await api('/api/admin/exercises', {
-      method: 'POST',
-      body: JSON.stringify({
-        section: fd.get('section'),
-        mode: fd.get('mode'),
-        title: fd.get('title'),
-        content: fd.get('content'),
-      }),
+    await api.adminAddExercise({
+      section: fd.get('section'),
+      mode: fd.get('mode'),
+      title: fd.get('title'),
+      content: fd.get('content'),
     });
     e.currentTarget.reset();
     toast('Exercise added');
@@ -162,5 +138,4 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 }
 
-// Initial
 loadUsers();

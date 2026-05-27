@@ -11,13 +11,29 @@ Includes user signup/login, an **admin dashboard** to manage users and add exerc
 
 ## Run
 
+The site can run in **two modes** — pick whichever fits.
+
+### Mode 1 — Full-stack (recommended)
+
+Starts the Node backend with multi-user auth, server-side data persistence, and an admin API.
+
 ```bash
 node server.js
 ```
 
-Open <http://localhost:3000>.
+Open <http://localhost:3000>. No `npm install` required — the server uses only Node built-ins.
 
-> No `npm install` needed — the server uses only Node built-ins.
+### Mode 2 — Static (any web host)
+
+Serve the `public/` folder from any static host (GitHub Pages, Netlify, Vercel, an Nginx box, or even by opening `public/index.html` over `file://`).
+
+When the backend can't be reached, the site automatically falls back to a **localStorage-backed store**:
+
+- The default admin (`admin@typing.local` / `admin123`) is seeded into your browser on first visit.
+- Signups, logins, exercises and admin actions all work, but data is **only saved in your current browser** and is not shared with other users.
+- A small banner appears at the bottom of the page noting "static mode".
+
+Switch back to Mode 1 anytime by running `node server.js` and refreshing.
 
 ## Default admin
 
