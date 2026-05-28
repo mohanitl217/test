@@ -56,28 +56,6 @@
     }
   }));
 
-  // Home-row position for each finger code (used as the "rest" position
-  // for floating fingertip indicators when not pressing a key).
-  const FINGER_HOMES = {
-    L4: { r: 2, k: 1 },   // A
-    L3: { r: 2, k: 2 },   // S
-    L2: { r: 2, k: 3 },   // D
-    L1: { r: 2, k: 4 },   // F
-    R1: { r: 2, k: 6 },   // J
-    R2: { r: 2, k: 7 },   // K
-    R3: { r: 2, k: 8 },   // L
-    R4: { r: 2, k: 9 },   // ;
-    TH: { r: 4, k: 2 },   // Space
-  };
-
-  const FINGER_LABELS = {
-    L4: 'P', L3: 'R', L2: 'M', L1: 'I',
-    R1: 'I', R2: 'M', R3: 'R', R4: 'P',
-    TH: '⌴',
-  };
-
-  const FINGER_ORDER = ['L4', 'L3', 'L2', 'L1', 'TH', 'R1', 'R2', 'R3', 'R4'];
-
   // ------------------------------------------------------------------
   // DOM refs
   // ------------------------------------------------------------------
@@ -90,7 +68,6 @@
   const fontNumEl = document.getElementById('font-size');
   const boldChk = document.getElementById('opt-bold');
   const showKbdChk = document.getElementById('opt-show-keyboard');
-  const handsOnKbdChk = document.getElementById('opt-hands-on-keyboard');
   const playSoundChk = document.getElementById('opt-play-sound');
   const moveOnErrorChk = document.getElementById('opt-move-on-error');
   const backspaceRadios = document.querySelectorAll('input[name="bs-mode"]');
@@ -115,7 +92,6 @@
     fontSize: 22,
     bold: false,
     showKbd: true,
-    handsOnKbd: false,
     playSound: true,
     moveOnError: true,
     bsMode: 'off',
@@ -173,126 +149,6 @@
       });
       kbdEl.appendChild(rowDiv);
     });
-    buildFingertips();
-  }
-
-  // Build the realistic SVG hands overlay AND the 9 fingertip pads.
-  function buildFingertips() {
-    // Remove anything we previously inserted
-    kbdEl.querySelectorAll('.fingertip, .kbd-hands').forEach((n) => n.remove());
-
-    // ------- SVG hands overlay (palm + fingers + thumb per side) -------
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(svgNS, 'svg');
-    svg.setAttribute('class', 'kbd-hands');
-    svg.setAttribute('viewBox', '0 0 1400 360');
-    svg.setAttribute('preserveAspectRatio', 'none');
-    svg.appendChild(buildHandGroup('left'));
-    svg.appendChild(buildHandGroup('right'));
-    kbdEl.appendChild(svg);
-
-    // ------- 9 fingertip "pads" that land on the active key -------
-    FINGER_ORDER.forEach((f) => {
-      const el = document.createElement('div');
-      el.className = 'fingertip';
-      el.dataset.finger = f;
-      kbdEl.appendChild(el);
-    });
-  }
-
-  // Constructs one hand silhouette: 4 fingers + a thumb + a palm.
-  // Coordinates are in the SVG viewBox (1400 x 360). Left occupies the
-  // left half (0-700), right the right half (700-1400). Each finger has
-  // a data-finger attribute matching CHAR_MAP.f codes.
-  function buildHandGroup(side) {
-    const ns = 'http://www.w3.org/2000/svg';
-    const g  = document.createElementNS(ns, 'g');
-    g.setAttribute('class', `hand hand-${side}`);
-
-    // x coordinates of the 4 fingertips for each side
-    // (pinky -> index ordering, then thumb separately)
-    const cfg = side === 'left'
-      ? { codes: ['L4', 'L3', 'L2', 'L1'], xs: [120, 235, 355, 475], thumbX: 580, thumbAngle: -32, palmCx: 320 }
-      : { codes: ['R4', 'R3', 'R2', 'R1'], xs: [1280, 1165, 1045, 925], thumbX: 820, thumbAngle: 32, palmCx: 1080 };
-
-    // Finger length (varies a bit so the silhouette looks human)
-    const lengths = [150, 185, 200, 180]; // pinky, ring, middle, index
-    const fingerWidth = 58;
-    const palmTopY = 220;
-
-    // Palm (rounded rect)
-    const palm = document.createElementNS(ns, 'path');
-    const px = cfg.palmCx;
-    palm.setAttribute('d', `
-      M ${px - 220},${palmTopY - 10}
-      Q ${px - 240},${palmTopY + 80} ${px - 200},${palmTopY + 130}
-      Q ${px - 100},${palmTopY + 175} ${px},${palmTopY + 175}
-      Q ${px + 100},${palmTopY + 175} ${px + 200},${palmTopY + 130}
-      Q ${px + 240},${palmTopY + 80} ${px + 220},${palmTopY - 10}
-      Z
-    `.trim());
-    palm.setAttribute('class', 'palm');
-    g.appendChild(palm);
-
-    // Knuckle line (subtle curve across palm to suggest knuckles)
-    const knuckle = document.createElementNS(ns, 'path');
-    knuckle.setAttribute('d', `M ${px - 200},${palmTopY + 30} Q ${px},${palmTopY + 5} ${px + 200},${palmTopY + 30}`);
-    knuckle.setAttribute('class', 'knuckle-line');
-    g.appendChild(knuckle);
-
-    // Fingers (4)
-    cfg.xs.forEach((x, i) => {
-      const len = lengths[i];
-
-      // Finger shape: rounded rectangle (rx = half width)
-      const finger = document.createElementNS(ns, 'rect');
-      finger.setAttribute('x', x - fingerWidth / 2);
-      finger.setAttribute('y', palmTopY - len);
-      finger.setAttribute('width', fingerWidth);
-      finger.setAttribute('height', len + 40); // extends into palm
-      finger.setAttribute('rx', fingerWidth / 2);
-      finger.setAttribute('class', 'finger');
-      finger.setAttribute('data-finger', cfg.codes[i]);
-      g.appendChild(finger);
-
-      // Fingernail
-      const nail = document.createElementNS(ns, 'ellipse');
-      nail.setAttribute('cx', x);
-      nail.setAttribute('cy', palmTopY - len + 16);
-      nail.setAttribute('rx', 18);
-      nail.setAttribute('ry', 11);
-      nail.setAttribute('class', 'nail');
-      g.appendChild(nail);
-    });
-
-    // Thumb (rotated capsule)
-    const thumb = document.createElementNS(ns, 'rect');
-    const tw = 70, th = 130;
-    thumb.setAttribute('x', cfg.thumbX - tw / 2);
-    thumb.setAttribute('y', palmTopY + 5 - th);
-    thumb.setAttribute('width', tw);
-    thumb.setAttribute('height', th + 50);
-    thumb.setAttribute('rx', tw / 2);
-    thumb.setAttribute('class', 'finger');
-    thumb.setAttribute('data-finger', 'TH');
-    thumb.setAttribute('transform', `rotate(${cfg.thumbAngle} ${cfg.thumbX} ${palmTopY + 30})`);
-    g.appendChild(thumb);
-
-    // Thumbnail
-    const tnail = document.createElementNS(ns, 'ellipse');
-    const ang = (cfg.thumbAngle * Math.PI) / 180;
-    const nailDist = th - 18;
-    const nx = cfg.thumbX + Math.sin(ang) * nailDist;
-    const ny = (palmTopY + 30) - Math.cos(ang) * nailDist;
-    tnail.setAttribute('cx', nx);
-    tnail.setAttribute('cy', ny);
-    tnail.setAttribute('rx', 16);
-    tnail.setAttribute('ry', 11);
-    tnail.setAttribute('transform', `rotate(${cfg.thumbAngle} ${nx} ${ny})`);
-    tnail.setAttribute('class', 'nail');
-    g.appendChild(tnail);
-
-    return g;
   }
 
   function highlightKeyboard(ch) {
@@ -353,68 +209,11 @@
   }
 
   function highlightFinger(ch) {
-    document.querySelectorAll('.hand-svg .finger.active, .kbd-hands .finger.active').forEach((e) => e.classList.remove('active'));
+    document.querySelectorAll('.hand-svg .finger.active').forEach((e) => e.classList.remove('active'));
     if (!ch) return;
     const map = CHAR_MAP[ch] || (ch === ' ' ? { f: 'TH' } : null);
     if (!map) return;
-    const sel = `.hand-svg .finger[data-finger="${map.f}"], .kbd-hands .finger[data-finger="${map.f}"]`;
-    document.querySelectorAll(sel).forEach((e) => e.classList.add('active'));
-  }
-
-  // ------------------------------------------------------------------
-  // Hands-on-Keyboard fingertip overlay
-  // ------------------------------------------------------------------
-  // Computes the (x, y) center of a key relative to the keyboard.
-  function keyCenter(r, k) {
-    const row = kbdEl.children[r];
-    if (!row) return null;
-    const key = row.children[k];
-    if (!key) return null;
-    const kr = key.getBoundingClientRect();
-    const cr = kbdEl.getBoundingClientRect();
-    return {
-      x: kr.left - cr.left + kr.width / 2,
-      y: kr.top - cr.top + kr.height / 2,
-    };
-  }
-
-  function placeFingertip(finger, r, k, isActive) {
-    const el = kbdEl.querySelector(`.fingertip[data-finger="${finger}"]`);
-    if (!el) return;
-    const c = keyCenter(r, k);
-    if (!c) return;
-    el.style.setProperty('--tx', c.x + 'px');
-    el.style.setProperty('--ty', c.y + 'px');
-    el.classList.toggle('active', !!isActive);
-    // Only the active fingertip pad is visually shown — others fade out so
-    // the hand silhouette below carries the visual weight.
-    el.style.opacity = isActive ? '1' : '0';
-  }
-
-  // Send each finger to its home; the active finger goes to the target key.
-  // Only the active fingertip pad is rendered (others are hidden); the SVG
-  // hand silhouettes already convey "fingers resting on home row".
-  function repositionFingertips(ch) {
-    if (!state.handsOnKbd) return;
-    const map = CHAR_MAP[ch] || (ch === ' ' ? { f: 'TH', r: 4, k: 2 } : null);
-    const activeFinger = map ? map.f : null;
-    FINGER_ORDER.forEach((f) => {
-      if (activeFinger && f === activeFinger) {
-        placeFingertip(f, map.r, map.k, true);
-      } else {
-        const home = FINGER_HOMES[f];
-        placeFingertip(f, home.r, home.k, false);
-      }
-    });
-  }
-
-  function applyHandsOnKbd() {
-    document.body.classList.toggle('hands-on-active', state.handsOnKbd);
-    kbdEl.classList.toggle('hands-on', state.handsOnKbd);
-    if (state.handsOnKbd) {
-      // give layout one frame to settle then position
-      requestAnimationFrame(() => repositionFingertips(state.target[state.typed.length]));
-    }
+    document.querySelectorAll(`.hand-svg .finger[data-finger="${map.f}"]`).forEach((e) => e.classList.add('active'));
   }
 
   // ------------------------------------------------------------------
@@ -442,7 +241,6 @@
     const next = state.target[state.typed.length];
     highlightKeyboard(next);
     highlightFinger(next);
-    repositionFingertips(next);
   }
 
   // ------------------------------------------------------------------
@@ -723,9 +521,6 @@
   }
   function applyShowKbd() {
     kbdEl.style.display = state.showKbd ? '' : 'none';
-    if (state.showKbd && state.handsOnKbd) {
-      requestAnimationFrame(() => repositionFingertips(state.target[state.typed.length]));
-    }
   }
 
   function bindUi() {
@@ -745,10 +540,6 @@
 
     boldChk.addEventListener('change', () => { state.bold = boldChk.checked; renderDrill(); });
     showKbdChk.addEventListener('change', () => { state.showKbd = showKbdChk.checked; applyShowKbd(); });
-    handsOnKbdChk.addEventListener('change', () => {
-      state.handsOnKbd = handsOnKbdChk.checked;
-      applyHandsOnKbd();
-    });
     playSoundChk.addEventListener('change', () => { state.playSound = playSoundChk.checked; if (state.playSound) ensureAudio(); });
     moveOnErrorChk.addEventListener('change', () => { state.moveOnError = moveOnErrorChk.checked; });
     backspaceRadios.forEach((r) => r.addEventListener('change', () => { if (r.checked) state.bsMode = r.value; }));
@@ -757,11 +548,6 @@
     drillEl.addEventListener('click', () => drillEl.focus());
     drillEl.addEventListener('focus', () => drillEl.classList.add('focused'));
     drillEl.addEventListener('blur',  () => drillEl.classList.remove('focused'));
-
-    // Reposition fingertips on resize (key positions change)
-    window.addEventListener('resize', () => {
-      if (state.handsOnKbd) repositionFingertips(state.target[state.typed.length]);
-    });
 
     // Result modal bindings
     methodTabs.forEach((t) => t.addEventListener('click', () => switchMethod(+t.dataset.method)));
@@ -792,6 +578,5 @@
   bindUi();
   applyFontSize();
   applyShowKbd();
-  applyHandsOnKbd();
   loadExercises();
 })();
