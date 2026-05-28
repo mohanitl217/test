@@ -1,18 +1,12 @@
 // Rich English Learn typing engine.
 // Features: exercise navigation, font-size + bold, settings (backspace mode,
-// show keyboard, play sounds, move on error), visual keyboard with current-key
-// highlight, and per-finger hand-guide highlight.
+// show keyboard, hands-on-keyboard mode, play sounds, move on error),
+// visual keyboard with current-key highlight, per-finger hand-guide,
+// floating fingertip indicators that smoothly slide to the next key,
+// and a modern result modal with Method 1 / Method 2 tabs.
 (function () {
   // ------------------------------------------------------------------
   // Keyboard layout (US QWERTY) with finger zones
-  //   f = finger code (used for color zone + hand finger highlight)
-  //     L4 = left pinky, L3 = ring, L2 = middle, L1 = index
-  //     R1 = right index, R2 = middle, R3 = ring, R4 = pinky
-  //     TH = thumbs, MOD = modifier (no finger guide)
-  //   c = single character emitted by this key (lowercase)
-  //   s = character emitted with Shift held
-  //   k = special key label
-  //   w = relative width (1 = standard)
   // ------------------------------------------------------------------
   const ROWS = [
     [
@@ -57,11 +51,32 @@
   ROWS.forEach((row, r) => row.forEach((key, k) => {
     if (key.c !== undefined) {
       CHAR_MAP[key.c] = { r, k, f: key.f, shift: false };
-      // upper-case alpha
       if (/^[a-z]$/.test(key.c)) CHAR_MAP[key.c.toUpperCase()] = { r, k, f: key.f, shift: true };
       if (key.s) CHAR_MAP[key.s] = { r, k, f: key.f, shift: true };
     }
   }));
+
+  // Home-row position for each finger code (used as the "rest" position
+  // for floating fingertip indicators when not pressing a key).
+  const FINGER_HOMES = {
+    L4: { r: 2, k: 1 },   // A
+    L3: { r: 2, k: 2 },   // S
+    L2: { r: 2, k: 3 },   // D
+    L1: { r: 2, k: 4 },   // F
+    R1: { r: 2, k: 6 },   // J
+    R2: { r: 2, k: 7 },   // K
+    R3: { r: 2, k: 8 },   // L
+    R4: { r: 2, k: 9 },   // ;
+    TH: { r: 4, k: 2 },   // Space
+  };
+
+  const FINGER_LABELS = {
+    L4: 'P', L3: 'R', L2: 'M', L1: 'I',
+    R1: 'I', R2: 'M', R3: 'R', R4: 'P',
+    TH: '⌴',
+  };
+
+  const FINGER_ORDER = ['L4', 'L3', 'L2', 'L1', 'TH', 'R1', 'R2', 'R3', 'R4'];
 
   // ------------------------------------------------------------------
   // DOM refs
@@ -75,6 +90,7 @@
   const fontNumEl = document.getElementById('font-size');
   const boldChk = document.getElementById('opt-bold');
   const showKbdChk = document.getElementById('opt-show-keyboard');
+  const handsOnKbdChk = document.getElementById('opt-hands-on-keyboard');
   const playSoundChk = document.getElementById('opt-play-sound');
   const moveOnErrorChk = document.getElementById('opt-move-on-error');
   const backspaceRadios = document.querySelectorAll('input[name="bs-mode"]');
@@ -99,9 +115,10 @@
     fontSize: 22,
     bold: false,
     showKbd: true,
+    handsOnKbd: false,
     playSound: true,
     moveOnError: true,
-    bsMode: 'off', // 'full' | 'word' | 'off'
+    bsMode: 'off',
     started: false,
     startedAt: 0,
     timer: null,
@@ -113,7 +130,7 @@
   };
 
   // ------------------------------------------------------------------
-  // Audio (Web Audio beep, no asset needed)
+  // Audio (Web Audio beep)
   // ------------------------------------------------------------------
   let audioCtx = null;
   function ensureAudio() {
@@ -156,6 +173,20 @@
       });
       kbdEl.appendChild(rowDiv);
     });
+    buildFingertips();
+  }
+
+  // Build 9 fingertip indicators (4 left + 4 right + 1 thumb).
+  function buildFingertips() {
+    // Remove any previous
+    kbdEl.querySelectorAll('.fingertip').forEach((n) => n.remove());
+    FINGER_ORDER.forEach((f) => {
+      const el = document.createElement('div');
+      el.className = 'fingertip';
+      el.dataset.finger = f;
+      el.textContent = FINGER_LABELS[f];
+      kbdEl.appendChild(el);
+    });
   }
 
   function highlightKeyboard(ch) {
@@ -163,7 +194,6 @@
     if (!ch) return;
     const map = CHAR_MAP[ch];
     if (!map) {
-      // Space falls through to dataset.char ' '
       if (ch === ' ') {
         const space = kbdEl.querySelector('[data-char=" "]');
         if (space) space.classList.add('cur');
@@ -174,7 +204,6 @@
     if (!row) return;
     const targetKey = row.children[map.k];
     if (targetKey) targetKey.classList.add('cur');
-    // Add a shift highlight too
     if (map.shift) {
       kbdEl.querySelectorAll('.kbd-key').forEach((el) => {
         if (el.textContent === 'Shift') el.classList.add('cur');
@@ -182,7 +211,7 @@
     }
   }
 
-  function flashKeyPress(ok) {
+  function flashKeyPress() {
     const cur = kbdEl.querySelector('.kbd-key.cur');
     if (!cur) return;
     cur.classList.add('pressed');
@@ -190,15 +219,13 @@
   }
 
   // ------------------------------------------------------------------
-  // Hand finger guide (SVG injected into placeholders)
+  // Side-card hands (existing) - finger highlight
   // ------------------------------------------------------------------
   function fingerSvg(side) {
-    // Side: 'L' or 'R'. Each finger has data-finger attr matching CHAR_MAP.f code.
     const flip = side === 'R' ? ' transform="scale(-1,1) translate(-200,0)"' : '';
     const codes = side === 'L'
       ? ['L4','L3','L2','L1','TH']
       : ['R4','R3','R2','R1','TH'];
-    // Five fingers along the top, palm at bottom
     const xs = [40, 75, 110, 145, 178];
     const fingers = xs.map((x, i) => {
       const isThumb = i === 4;
@@ -211,14 +238,7 @@
         <circle class="tip" data-finger="${codes[i]}" cx="${x}" cy="${fy + 8}" r="6"/>
       `;
     }).join('');
-    return `
-      <svg class="hand-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
-        <g${flip}>
-          ${fingers}
-          <ellipse class="palm" cx="110" cy="170" rx="80" ry="40"/>
-        </g>
-      </svg>
-    `;
+    return `<svg class="hand-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg"><g${flip}>${fingers}<ellipse class="palm" cx="110" cy="170" rx="80" ry="40"/></g></svg>`;
   }
 
   function renderHands() {
@@ -232,6 +252,57 @@
     const map = CHAR_MAP[ch] || (ch === ' ' ? { f: 'TH' } : null);
     if (!map) return;
     document.querySelectorAll(`.hand-svg .finger[data-finger="${map.f}"]`).forEach((e) => e.classList.add('active'));
+  }
+
+  // ------------------------------------------------------------------
+  // Hands-on-Keyboard fingertip overlay
+  // ------------------------------------------------------------------
+  // Computes the (x, y) center of a key relative to the keyboard.
+  function keyCenter(r, k) {
+    const row = kbdEl.children[r];
+    if (!row) return null;
+    const key = row.children[k];
+    if (!key) return null;
+    const kr = key.getBoundingClientRect();
+    const cr = kbdEl.getBoundingClientRect();
+    return {
+      x: kr.left - cr.left + kr.width / 2,
+      y: kr.top - cr.top + kr.height / 2,
+    };
+  }
+
+  function placeFingertip(finger, r, k, isActive) {
+    const el = kbdEl.querySelector(`.fingertip[data-finger="${finger}"]`);
+    if (!el) return;
+    const c = keyCenter(r, k);
+    if (!c) return;
+    el.style.setProperty('--tx', c.x + 'px');
+    el.style.setProperty('--ty', c.y + 'px');
+    el.classList.toggle('active', !!isActive);
+  }
+
+  // Send each finger to its home; the active finger goes to the target key.
+  function repositionFingertips(ch) {
+    if (!state.handsOnKbd) return;
+    const map = CHAR_MAP[ch] || (ch === ' ' ? { f: 'TH', r: 4, k: 2 } : null);
+    const activeFinger = map ? map.f : null;
+    FINGER_ORDER.forEach((f) => {
+      if (activeFinger && f === activeFinger) {
+        placeFingertip(f, map.r, map.k, true);
+      } else {
+        const home = FINGER_HOMES[f];
+        placeFingertip(f, home.r, home.k, false);
+      }
+    });
+  }
+
+  function applyHandsOnKbd() {
+    document.body.classList.toggle('hands-on-active', state.handsOnKbd);
+    kbdEl.classList.toggle('hands-on', state.handsOnKbd);
+    if (state.handsOnKbd) {
+      // give layout one frame to settle then position
+      requestAnimationFrame(() => repositionFingertips(state.target[state.typed.length]));
+    }
   }
 
   // ------------------------------------------------------------------
@@ -253,14 +324,13 @@
       html += `<span class="${cls}">${escapeHtml(display)}</span>`;
     }
     drillEl.innerHTML = html;
-    // Re-style for current font / bold settings
     drillEl.style.fontSize = state.fontSize + 'px';
     drillEl.classList.toggle('bold', state.bold);
 
-    // Highlight next-key on visual keyboard + hand
     const next = state.target[state.typed.length];
     highlightKeyboard(next);
     highlightFinger(next);
+    repositionFingertips(next);
   }
 
   // ------------------------------------------------------------------
@@ -287,28 +357,22 @@
       updateStats();
     }, 250);
   }
-
-  function stopTimer() {
-    clearInterval(state.timer);
-    state.timer = null;
-  }
+  function stopTimer() { clearInterval(state.timer); state.timer = null; }
 
   // ------------------------------------------------------------------
-  // Typing input handling - keydown captured globally when drill focused
+  // Typing input handling
   // ------------------------------------------------------------------
   function handleKey(e) {
-    // Ignore if user is typing in an input/select elsewhere
     const tag = (e.target && e.target.tagName) || '';
     if (['INPUT', 'SELECT', 'TEXTAREA'].includes(tag)) return;
+    // Don't intercept keystrokes when result modal is open
+    if (resultModal.classList.contains('show')) return;
 
-    // We need the drill to be the active focus ring; let drill be focusable
     if (document.activeElement !== drillEl && !drillEl.contains(document.activeElement)) {
-      // Not focused on drill; ignore unless they pressed a printable character (auto-focus)
       if (e.key.length === 1 || e.key === 'Backspace') drillEl.focus();
       else return;
     }
 
-    // Backspace handling
     if (e.key === 'Backspace') {
       e.preventDefault();
       if (state.bsMode === 'off') return;
@@ -317,7 +381,6 @@
       if (state.bsMode === 'full') {
         state.typed = state.typed.slice(0, -1);
       } else if (state.bsMode === 'word') {
-        // Strip trailing whitespace then up to next whitespace
         let t = state.typed.replace(/\s+$/, '');
         const sp = t.lastIndexOf(' ');
         state.typed = sp === -1 ? '' : t.slice(0, sp + 1);
@@ -326,28 +389,26 @@
       return;
     }
 
-    // Ignore non-printable keys
     if (e.key.length !== 1) return;
-    // Ignore modifier combos
     if (e.ctrlKey || e.metaKey || e.altKey) return;
 
     e.preventDefault();
     startTimerIfNeeded();
 
     const expected = state.target[state.typed.length];
-    if (expected === undefined) return; // already done
+    if (expected === undefined) return;
 
     state.totalChars++;
     if (e.key === expected) {
       state.correctChars++;
       state.typed += e.key;
       beepGood();
-      flashKeyPress(true);
+      flashKeyPress();
     } else {
       state.errors++;
       beepBad();
       if (state.moveOnError) {
-        state.typed += e.key; // record the wrong char
+        state.typed += e.key;
       }
     }
     renderDrill();
@@ -371,17 +432,34 @@
   const resultCloseBtn  = document.getElementById('result-close');
   const resultRepeatBtn = document.getElementById('result-repeat');
   const resultNextBtn   = document.getElementById('result-next');
+  const methodTabs      = document.querySelectorAll('.method-tab');
+  const methodPanels    = {
+    1: document.getElementById('method-panel-1'),
+    2: document.getElementById('method-panel-2'),
+  };
+  const ringFg          = document.getElementById('ring-acc');
+  const RING_LEN        = 327; // 2π × 52
 
   function setText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;
   }
 
+  function gradeFromScore(wpm, acc) {
+    // Combined heuristic: weight accuracy heavier
+    const score = (acc * 0.6) + (Math.min(wpm, 80) / 80 * 100 * 0.4);
+    if (score >= 90) return { grade: 'A+', label: 'Outstanding' };
+    if (score >= 80) return { grade: 'A',  label: 'Excellent' };
+    if (score >= 70) return { grade: 'B',  label: 'Great work' };
+    if (score >= 55) return { grade: 'C',  label: 'Keep going' };
+    if (score >= 40) return { grade: 'D',  label: 'Practice more' };
+    return { grade: 'E', label: 'Try again' };
+  }
+
   function computeMethod2Words() {
-    // Compare typed vs target on a word-by-word basis (split on whitespace).
     const t = state.target.split(/\s+/).filter(Boolean);
     const u = state.typed.split(/\s+/).filter(Boolean);
-    const total = Math.max(u.length, 0);
+    const total = u.length;
     let correct = 0;
     for (let i = 0; i < u.length; i++) {
       if (u[i] === t[i]) correct++;
@@ -393,31 +471,51 @@
     const seconds = Math.max(state.elapsed, 1);
     const minutes = seconds / 60;
 
-    // ---- Method 1: 5 chars = 1 word ----
-    const grossKeystrokes = state.totalChars;
-    const netKeystrokes   = state.correctChars;
-    const m1GrossWpm = Math.round((grossKeystrokes / 5) / minutes);
-    const m1NetWpm   = Math.round((netKeystrokes   / 5) / minutes);
-    const m1GrossKsm = Math.round(grossKeystrokes / minutes);
-    const m1NetKsm   = Math.round(netKeystrokes   / minutes);
+    // Method 1 (5 chars = 1 word)
+    const grossKs = state.totalChars;
+    const netKs   = state.correctChars;
+    const m1GrossWpm = Math.round((grossKs / 5) / minutes);
+    const m1NetWpm   = Math.round((netKs   / 5) / minutes);
+    const m1GrossKsm = Math.round(grossKs / minutes);
+    const m1NetKsm   = Math.round(netKs   / minutes);
     const m1Acc      = state.totalChars ? Math.round((state.correctChars / state.totalChars) * 100) : 0;
 
-    // ---- Method 2: word = group separated by whitespace ----
+    // Method 2 (space-separated words)
     const m2 = computeMethod2Words();
     const m2GrossWpm = Math.round(m2.total   / minutes);
     const m2NetWpm   = Math.round(m2.correct / minutes);
-    // Keystroke metrics are the same (KSPM is character-based)
-    const m2GrossKsm = m1GrossKsm;
-    const m2NetKsm   = m1NetKsm;
     const m2Acc      = m2.total ? Math.round((m2.correct / m2.total) * 100) : 0;
 
-    // ---- Top summary ----
-    setText('r-duration',         `${seconds} second${seconds === 1 ? '' : 's'}`);
+    // Hero numbers
+    setText('hero-wpm', m1NetWpm);
+    setText('hero-acc', m1Acc + '%');
+
+    // Grade
+    const { grade, label } = gradeFromScore(m1NetWpm, m1Acc);
+    setText('result-grade', grade);
+    setText('result-eyebrow', label.toUpperCase());
+    document.getElementById('result-title').textContent =
+      m1Acc >= 95 ? 'Beautiful job!' :
+      m1Acc >= 80 ? 'Nicely done!' :
+      m1Acc >= 60 ? 'Solid effort!' :
+                    'Lesson complete';
+
+    // Animate accuracy ring
+    if (ringFg) {
+      ringFg.style.strokeDashoffset = String(RING_LEN);
+      requestAnimationFrame(() => {
+        ringFg.style.strokeDashoffset = String(RING_LEN * (1 - m1Acc / 100));
+      });
+    }
+
+    // Mini stats
+    setText('r-duration',         seconds < 60 ? `${seconds}s` : `${Math.floor(seconds/60)}m ${seconds%60}s`);
     setText('r-total-words',      m2.total);
     setText('r-correct-words',    m2.correct);
     setText('r-incorrect-words',  m2.incorrect);
+    setText('r-bs-count',         state.backspaces);
 
-    // ---- Method 1 fields ----
+    // Method 1 fields
     setText('r1-net-wpm',   m1NetWpm);
     setText('r1-net-ksm',   m1NetKsm);
     setText('r1-net-ksh',   m1NetKsm * 60);
@@ -425,19 +523,17 @@
     setText('r1-gross-ksm', m1GrossKsm);
     setText('r1-gross-ksh', m1GrossKsm * 60);
     setText('r1-acc',       m1Acc);
-    setText('r1-bs',        state.backspaces);
 
-    // ---- Method 2 fields ----
+    // Method 2 fields
     setText('r2-net-wpm',   m2NetWpm);
-    setText('r2-net-ksm',   m2NetKsm);
-    setText('r2-net-ksh',   m2NetKsm * 60);
+    setText('r2-net-ksm',   m1NetKsm);
+    setText('r2-net-ksh',   m1NetKsm * 60);
     setText('r2-gross-wpm', m2GrossWpm);
-    setText('r2-gross-ksm', m2GrossKsm);
-    setText('r2-gross-ksh', m2GrossKsm * 60);
+    setText('r2-gross-ksm', m1GrossKsm);
+    setText('r2-gross-ksh', m1GrossKsm * 60);
     setText('r2-acc',       m2Acc);
-    setText('r2-bs',        state.backspaces);
 
-    // ---- Typed text with per-character correctness highlight ----
+    // Typed text
     const typedBlock = document.getElementById('r-typed-block');
     const typedEl    = document.getElementById('r-typed');
     if (state.typed.length === 0) {
@@ -455,11 +551,17 @@
       typedEl.innerHTML = html;
     }
 
+    // Default to Method 1 tab
+    switchMethod(1);
     resultModal.classList.add('show');
   }
 
-  function hideResult() {
-    resultModal.classList.remove('show');
+  function hideResult() { resultModal.classList.remove('show'); }
+
+  function switchMethod(n) {
+    methodTabs.forEach((t) => t.classList.toggle('active', +t.dataset.method === n));
+    methodPanels[1].hidden = n !== 1;
+    methodPanels[2].hidden = n !== 2;
   }
 
   // ------------------------------------------------------------------
@@ -507,9 +609,11 @@
     fontNumEl.textContent = state.fontSize;
     drillEl.style.fontSize = state.fontSize + 'px';
   }
-
   function applyShowKbd() {
     kbdEl.style.display = state.showKbd ? '' : 'none';
+    if (state.showKbd && state.handsOnKbd) {
+      requestAnimationFrame(() => repositionFingertips(state.target[state.typed.length]));
+    }
   }
 
   function bindUi() {
@@ -529,6 +633,10 @@
 
     boldChk.addEventListener('change', () => { state.bold = boldChk.checked; renderDrill(); });
     showKbdChk.addEventListener('change', () => { state.showKbd = showKbdChk.checked; applyShowKbd(); });
+    handsOnKbdChk.addEventListener('change', () => {
+      state.handsOnKbd = handsOnKbdChk.checked;
+      applyHandsOnKbd();
+    });
     playSoundChk.addEventListener('change', () => { state.playSound = playSoundChk.checked; if (state.playSound) ensureAudio(); });
     moveOnErrorChk.addEventListener('change', () => { state.moveOnError = moveOnErrorChk.checked; });
     backspaceRadios.forEach((r) => r.addEventListener('change', () => { if (r.checked) state.bsMode = r.value; }));
@@ -538,7 +646,13 @@
     drillEl.addEventListener('focus', () => drillEl.classList.add('focused'));
     drillEl.addEventListener('blur',  () => drillEl.classList.remove('focused'));
 
-    // Result modal
+    // Reposition fingertips on resize (key positions change)
+    window.addEventListener('resize', () => {
+      if (state.handsOnKbd) repositionFingertips(state.target[state.typed.length]);
+    });
+
+    // Result modal bindings
+    methodTabs.forEach((t) => t.addEventListener('click', () => switchMethod(+t.dataset.method)));
     resultPrintBtn.addEventListener('click', () => window.print());
     resultCloseBtn.addEventListener('click', hideResult);
     resultRepeatBtn.addEventListener('click', () => {
@@ -566,5 +680,6 @@
   bindUi();
   applyFontSize();
   applyShowKbd();
+  applyHandsOnKbd();
   loadExercises();
 })();

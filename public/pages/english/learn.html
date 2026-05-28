@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>English · Learn Typing</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../css/base.css" />
   <link rel="stylesheet" href="../../css/learn-pro.css" />
   <link rel="stylesheet" href="../../css/english.css" />
@@ -22,8 +22,8 @@
   </nav>
 
   <main class="pro-shell">
-    <!-- LEFT COLUMN: Font + Left hand -->
-    <aside class="side-panel">
+    <!-- LEFT COLUMN: Font + Left hand (hidden when "Hands on Keyboard" is on) -->
+    <aside class="side-panel" id="side-left">
       <div class="pro-card">
         <h3>Select Font</h3>
         <label class="opt-row">
@@ -32,7 +32,7 @@
         </label>
       </div>
 
-      <div class="pro-card">
+      <div class="pro-card hand-card">
         <h3>Left Hand</h3>
         <div id="left-hand"></div>
         <div class="hand-label">Left fingers</div>
@@ -70,7 +70,7 @@
     </section>
 
     <!-- RIGHT COLUMN: Settings + Right hand -->
-    <aside class="side-panel">
+    <aside class="side-panel" id="side-right">
       <div class="pro-card">
         <h3>Settings</h3>
         <h4>Backspace Options</h4>
@@ -80,11 +80,12 @@
 
         <h4 style="margin-top:18px;">Behaviour</h4>
         <label class="opt-row"><input type="checkbox" id="opt-show-keyboard" checked /><span>Show Keyboard</span></label>
+        <label class="opt-row"><input type="checkbox" id="opt-hands-on-keyboard" /><span>Hands on Keyboard</span></label>
         <label class="opt-row"><input type="checkbox" id="opt-play-sound" checked /><span>Play Sounds</span></label>
         <label class="opt-row"><input type="checkbox" id="opt-move-on-error" checked /><span>Move on Error</span></label>
       </div>
 
-      <div class="pro-card">
+      <div class="pro-card hand-card">
         <h3>Right Hand</h3>
         <div id="right-hand"></div>
         <div class="hand-label">Right fingers</div>
@@ -94,77 +95,124 @@
 
   <div id="complete-toast" class="complete-toast">✓ Lesson complete — opening result…</div>
 
-  <!-- Result modal (shown when typing completes) -->
+  <!-- =====================  RESULT MODAL  ===================== -->
   <div id="result-modal" class="result-modal" role="dialog" aria-modal="true" aria-labelledby="result-title">
-    <div class="result-window">
-      <div class="result-header">
-        <div class="result-app">
-          <span class="result-app-icon">📋</span>
-          <span>Result &mdash; TypeMaster</span>
-        </div>
-        <div class="result-header-actions">
-          <button id="result-print" class="btn">Print</button>
-          <button id="result-close" class="result-close" aria-label="Close">&times;</button>
-        </div>
-      </div>
-      <div class="result-brand" id="result-title">TypeMaster Typing Tutor</div>
-      <div class="result-tab-row"><div class="result-tab active">Result</div></div>
+    <div class="result-card">
+      <button id="result-close" class="result-close-btn" aria-label="Close">&times;</button>
 
-      <div class="result-body">
-        <h2 class="result-h2">Detailed Result as below</h2>
-
-        <div class="result-summary">
-          <div class="result-row"><span class="result-label">Test Duration</span><span class="result-colon">:</span><span class="result-value" id="r-duration">0 seconds</span></div>
-          <div class="result-row"><span class="result-label">Total Words Typed</span><span class="result-colon">:</span><span class="result-value" id="r-total-words">0</span></div>
-          <div class="result-row"><span class="result-label">Correct Words Typed</span><span class="result-colon">:</span><span class="result-value" id="r-correct-words">0</span></div>
-          <div class="result-row"><span class="result-label">Incorrect Words Typed</span><span class="result-colon">:</span><span class="result-value" id="r-incorrect-words">0</span></div>
+      <!-- Hero: grade + headline -->
+      <div class="result-hero">
+        <div class="result-grade-ring">
+          <svg viewBox="0 0 120 120" class="ring-svg" aria-hidden="true">
+            <circle class="ring-bg" cx="60" cy="60" r="52" />
+            <circle class="ring-fg" cx="60" cy="60" r="52" id="ring-acc" />
+          </svg>
+          <div class="result-grade" id="result-grade">A</div>
         </div>
-
-        <div class="result-method-title">
-          <strong>Method 1</strong>
-          <em>(one word = 5 characters or key strokes)</em>
-        </div>
-        <div class="result-method">
-          <div class="result-row"><span class="result-label">Net Speed</span><span class="result-colon">:</span><span class="result-value">
-            <span id="r1-net-wpm">0</span> words per minute<br/>
-            <span id="r1-net-ksm">0</span> key strokes per minute <em>(<span id="r1-net-ksh">0</span> per hour)</em>
-          </span></div>
-          <div class="result-row"><span class="result-label">Gross Speed</span><span class="result-colon">:</span><span class="result-value">
-            <span id="r1-gross-wpm">0</span> words per minute<br/>
-            <span id="r1-gross-ksm">0</span> key strokes per minute <em>(<span id="r1-gross-ksh">0</span> per hour)</em>
-          </span></div>
-          <div class="result-row"><span class="result-label">Accuracy</span><span class="result-colon">:</span><span class="result-value"><span id="r1-acc">0</span>%</span></div>
-          <div class="result-row"><span class="result-label">Backspace</span><span class="result-colon">:</span><span class="result-value"><span id="r1-bs">0</span> times</span></div>
-        </div>
-
-        <div class="result-method-title">
-          <strong>Method 2</strong>
-          <em>(one word = group of letters separated by space)</em>
-        </div>
-        <div class="result-method">
-          <div class="result-row"><span class="result-label">Net Speed</span><span class="result-colon">:</span><span class="result-value">
-            <span id="r2-net-wpm">0</span> words per minute<br/>
-            <span id="r2-net-ksm">0</span> key strokes per minute <em>(<span id="r2-net-ksh">0</span> per hour)</em>
-          </span></div>
-          <div class="result-row"><span class="result-label">Gross Speed</span><span class="result-colon">:</span><span class="result-value">
-            <span id="r2-gross-wpm">0</span> words per minute<br/>
-            <span id="r2-gross-ksm">0</span> key strokes per minute <em>(<span id="r2-gross-ksh">0</span> per hour)</em>
-          </span></div>
-          <div class="result-row"><span class="result-label">Accuracy</span><span class="result-colon">:</span><span class="result-value"><span id="r2-acc">0</span>%</span></div>
-          <div class="result-row"><span class="result-label">Backspace</span><span class="result-colon">:</span><span class="result-value"><span id="r2-bs">0</span> times</span></div>
-        </div>
-
-        <p class="result-note"><strong>Note:</strong> Key depressions, characters and key strokes are the same thing.</p>
-
-        <div class="result-typed" id="r-typed-block">
-          <div class="result-typed-title">Your typed text</div>
-          <div class="result-typed-text" id="r-typed"></div>
+        <div class="result-hero-text">
+          <div class="result-eyebrow" id="result-eyebrow">Lesson complete</div>
+          <h1 id="result-title">Beautiful job!</h1>
+          <div class="result-headline-stat">
+            <span class="hero-num" id="hero-wpm">0</span>
+            <span class="hero-unit">words / min</span>
+            <span class="hero-divider">·</span>
+            <span class="hero-num accent" id="hero-acc">0%</span>
+            <span class="hero-unit">accuracy</span>
+          </div>
         </div>
       </div>
 
-      <div class="result-footer">
-        <button id="result-repeat" class="btn">Repeat</button>
-        <button id="result-next" class="btn btn-solid">Next &raquo;&raquo;</button>
+      <!-- Quick stats row -->
+      <div class="result-mini">
+        <div class="mini-tile">
+          <div class="mini-value" id="r-duration">0s</div>
+          <div class="mini-label">Test Duration</div>
+        </div>
+        <div class="mini-tile">
+          <div class="mini-value" id="r-total-words">0</div>
+          <div class="mini-label">Total Words</div>
+        </div>
+        <div class="mini-tile success">
+          <div class="mini-value" id="r-correct-words">0</div>
+          <div class="mini-label">Correct</div>
+        </div>
+        <div class="mini-tile danger">
+          <div class="mini-value" id="r-incorrect-words">0</div>
+          <div class="mini-label">Incorrect</div>
+        </div>
+        <div class="mini-tile muted">
+          <div class="mini-value" id="r-bs-count">0</div>
+          <div class="mini-label">Backspace</div>
+        </div>
+      </div>
+
+      <!-- Method tabs -->
+      <div class="method-tabs">
+        <button class="method-tab active" data-method="1">
+          Method 1
+          <span class="method-sub">5 chars = 1 word</span>
+        </button>
+        <button class="method-tab" data-method="2">
+          Method 2
+          <span class="method-sub">space-separated</span>
+        </button>
+      </div>
+
+      <div class="method-panel" id="method-panel-1">
+        <div class="speed-row">
+          <div class="speed-block">
+            <div class="speed-label">Net Speed</div>
+            <div class="speed-main"><span id="r1-net-wpm">0</span><span class="speed-unit">wpm</span></div>
+            <div class="speed-sub"><span id="r1-net-ksm">0</span> ks/min · <span id="r1-net-ksh">0</span>/hr</div>
+          </div>
+          <div class="speed-block">
+            <div class="speed-label">Gross Speed</div>
+            <div class="speed-main"><span id="r1-gross-wpm">0</span><span class="speed-unit">wpm</span></div>
+            <div class="speed-sub"><span id="r1-gross-ksm">0</span> ks/min · <span id="r1-gross-ksh">0</span>/hr</div>
+          </div>
+          <div class="speed-block">
+            <div class="speed-label">Accuracy</div>
+            <div class="speed-main"><span id="r1-acc">0</span><span class="speed-unit">%</span></div>
+            <div class="speed-sub">based on characters</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="method-panel" id="method-panel-2" hidden>
+        <div class="speed-row">
+          <div class="speed-block">
+            <div class="speed-label">Net Speed</div>
+            <div class="speed-main"><span id="r2-net-wpm">0</span><span class="speed-unit">wpm</span></div>
+            <div class="speed-sub"><span id="r2-net-ksm">0</span> ks/min · <span id="r2-net-ksh">0</span>/hr</div>
+          </div>
+          <div class="speed-block">
+            <div class="speed-label">Gross Speed</div>
+            <div class="speed-main"><span id="r2-gross-wpm">0</span><span class="speed-unit">wpm</span></div>
+            <div class="speed-sub"><span id="r2-gross-ksm">0</span> ks/min · <span id="r2-gross-ksh">0</span>/hr</div>
+          </div>
+          <div class="speed-block">
+            <div class="speed-label">Accuracy</div>
+            <div class="speed-main"><span id="r2-acc">0</span><span class="speed-unit">%</span></div>
+            <div class="speed-sub">based on space-separated words</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="result-note">
+        <strong>Note:</strong> Key depressions, characters and key strokes are the same thing.
+      </p>
+
+      <div class="result-typed" id="r-typed-block">
+        <div class="result-typed-title">Your typed text</div>
+        <div class="result-typed-text" id="r-typed"></div>
+      </div>
+
+      <div class="result-actions">
+        <button id="result-print" class="btn btn-ghost">Print</button>
+        <div class="result-actions-right">
+          <button id="result-repeat" class="btn">Repeat</button>
+          <button id="result-next" class="btn btn-solid">Next exercise →</button>
+        </div>
       </div>
     </div>
   </div>
