@@ -90,8 +90,56 @@ if (!fs.existsSync(USERS_FILE)) {
 }
 
 if (!fs.existsSync(EX_FILE)) {
+  // ---- English Learn: 32 progressive drills (home row -> sentences) ----
+  const EN_LEARN = [
+    'Home row drill 1',     'jjjj ffff jjjj ffff jjj fff fjf jfj jjj fff jjjj ffff fjfj fjfj',
+    'Home row drill 2',     'kkkk dddd kkkk dddd kdk dkd kkk ddd kdkd kdkd ddkk ddkk kkdd kkdd',
+    'Home row drill 3',     'llll ssss llll ssss lsl sls lll sss lsls lsls ssll ssll llss llss',
+    'Home row drill 4',     ';;;; aaaa ;;;; aaaa ;a; a;a ;;; aaa ;a;a ;a;a aa;; aa;; ;;aa ;;aa',
+    'Home row mix 1',       'asdf jkl; asdf jkl; asdf jkl; fjdk slla fjdk slla asdf jkl; sjdk fla',
+    'Home row mix 2',       'ddkk dkdj jkdj jdkd ssss llll dddd kkkk ;;;; ;;;; ;;;; ssss llll dddd',
+    'Home row words',       'add ask sad lad fall jaks asks dad fad lass salad flask alas saga',
+    'Top row 1',            'rrrr uuuu eeee iiii rrru ueir ueir reui reui rurer rurer eieie',
+    'Top row 2',            'tttt yyyy wwww oooo qqqq pppp tyto woop qpwp wopr wopr pwop pwop',
+    'Top row mix',          'were quit pour your trip type quote opera puppy worry quart erupt',
+    'Bottom row 1',         'vvvv mmmm cccc nnnn vmvm cncn vmnc vmnc mncv mncv ncvc ncvc',
+    'Bottom row 2',         'bbbb ,,,, xxxx .... bxbx ,.,. xbxb ,.,. ,b,b ,b,b x.x. x.x.',
+    'Bottom row mix',       'mix can mom van zone exam buzz pizza puzzle vacant bench winter',
+    'Letters: e and i',     'eei iee eie eei ieie eiei see fee bee tie pie die tile mile niece',
+    'Letters: r and u',     'rur uru rur uru rurur ururu rule four user pure rude tour pure rural',
+    'Letters: t and y',     'tyt yty tyt yty tyty ytyt try try yes yet toy try city stay party',
+    'Letters: g and h',     'ghg hgh ghg hgh ghgh hghg gigh high hugh ghee high hagg ghost graph',
+    'Letters: b and n',     'bnb nbn bnb nbn bnbn nbnb baby band bend bone bind nine name nail',
+    'Letters: c and m',     'cmc mcm cmc mcm cmcm mcmc come came calm comb mice make camp clam',
+    'Letters: v and ,',     'v,v ,v, v,v ,v, v,v, ,v,v vivid view, very, vase, voice, vivid,',
+    'Letters: x z q .',     'xzq .qx zxq x.z xzqx zxq. xzq. quiz, lazy. zone. quack. exact. quartz.',
+    'Capitals 1',           'Aaaa Sssss Ddddd Ffff Jjjj Kkkk Llll Hhh Tttt Yyy Aa Ss Dd Ff Jj Kk',
+    'Capitals 2',           'The Quick Brown Fox Jumps Over The Lazy Dog The Sun Sets Low',
+    'Punctuation 1',        'Hi, hello! What? Wait. Yes; no; maybe. Stop! Go. Come, sit, eat.',
+    'Punctuation 2',        '"He said," I replied. "Yes!" she shouted. (Maybe?) [Note] {ok} -wait-',
+    'Numbers row',          '1234 5678 90 1029 3847 5566 7788 9900 1122 3344 5566 1234567890',
+    'Symbols',              '!@#$ %^&* ()_+ -={} []|\\ :;\'", <>./?  $19.99 100% A&B (a+b)*c',
+    'Words 1',              'time year work life hand part know take place make people thing',
+    'Words 2',              'great small large young happy sorry maybe never always sometimes',
+    'Sentences 1',          'The sun rises in the east and sets in the west. Birds fly south.',
+    'Sentences 2',          'Practice makes perfect. Rome was not built in a day. Slow but steady wins.',
+    'Sentences 3',          'I think, therefore I am. To be or not to be, that is the question.',
+    'Paragraph',            'Touch typing is a skill that develops with practice. Keep your fingers on the home row, glance at the screen, and let muscle memory do the rest. Speed will come naturally once accuracy is solid.',
+  ];
+  const enLearn = [];
+  for (let i = 0; i < EN_LEARN.length; i += 2) {
+    enLearn.push({
+      id: 'eL' + (i / 2 + 1),
+      section: 'english',
+      mode: 'learn',
+      title: EN_LEARN[i],
+      content: EN_LEARN[i + 1],
+      createdAt: new Date().toISOString(),
+    });
+  }
+
   writeJson(EX_FILE, [
-    { id: 'e1', section: 'english', mode: 'learn', title: 'Home Row Basics', content: 'asdf jkl; asdf jkl; sad lad fall jaks asks dad fad lass', createdAt: new Date().toISOString() },
+    ...enLearn,
     { id: 'e2', section: 'english', mode: 'test',  title: 'Quick Brown Fox', content: 'The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.', createdAt: new Date().toISOString() },
     { id: 'e3', section: 'english', mode: 'number',title: 'Number Drill',    content: '12345 67890 1029 3847 5566 7788 9900 1122 3344 5566', createdAt: new Date().toISOString() },
     { id: 'h1', section: 'hindi-krutidev', mode: 'learn', title: 'अभ्यास 1', content: 'dk[k Mky Hkkjr esjs ns\'k dk uke gSA ge lc ,d gSaA', createdAt: new Date().toISOString() },

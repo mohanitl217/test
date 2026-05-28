@@ -6,7 +6,7 @@
   <title>English · Learn Typing</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../css/base.css" />
-  <link rel="stylesheet" href="../../css/learn.css" />
+  <link rel="stylesheet" href="../../css/learn-pro.css" />
   <link rel="stylesheet" href="../../css/english.css" />
 </head>
 <body class="theme-english-page">
@@ -15,41 +15,86 @@
       <a href="../../index.html" class="brand"><span class="brand-mark">T</span>TypeMaster</a>
       <div class="nav-links">
         <a href="../../index.html">Home</a>
+        <a href="number.html">Number Typing</a>
         <a href="test.html">Take Test →</a>
       </div>
     </div>
   </nav>
 
-  <main class="exercise-shell">
-    <div class="exercise-head">
-      <div>
-        <h1>English · Learn Typing</h1>
-        <div class="subtitle">Watch the highlighted letter, type it, and the next one lights up.</div>
+  <main class="pro-shell">
+    <!-- LEFT COLUMN: Font + Left hand -->
+    <aside class="side-panel">
+      <div class="pro-card">
+        <h3>Select Font</h3>
+        <label class="opt-row">
+          <input type="checkbox" id="opt-bold" />
+          <span>Bold</span>
+        </label>
       </div>
-      <div class="lesson-pick">
-        <label class="label" style="margin:0;">Lesson:</label>
-        <select id="lesson-select"></select>
-        <span class="label" style="margin:0;">Accuracy: <span id="accuracy" style="color:var(--brand);font-weight:700;">100%</span></span>
-      </div>
-    </div>
 
-    <div class="learn-card">
-      <div class="progress-bar"><span id="progress-bar"></span></div>
-      <div id="target" class="target-text"></div>
-      <input id="input" class="typing-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Start typing here…" />
-      <div class="next-key-hint">
-        <span class="key" id="next-key">A</span>
-        <span class="label">Next key to press</span>
+      <div class="pro-card">
+        <h3>Left Hand</h3>
+        <div id="left-hand"></div>
+        <div class="hand-label">Left fingers</div>
       </div>
-      <div class="controls">
-        <button id="reset-btn" class="btn">Restart lesson</button>
-        <a href="test.html" class="btn btn-solid">Ready? Take a test →</a>
+    </aside>
+
+    <!-- CENTER COLUMN: Exercise bar, drill, stats, keyboard -->
+    <section class="center-panel">
+      <div class="pro-card" style="padding:14px;">
+        <div class="exercise-bar">
+          <button class="nav-btn" id="prev-btn" aria-label="Previous exercise">&laquo;</button>
+          <select id="exercise-select"><option>Loading…</option></select>
+          <button class="nav-btn" id="next-btn" aria-label="Next exercise">&raquo;</button>
+          <div class="font-controls" title="Adjust drill font size">
+            <button id="font-down" aria-label="Decrease font size">A-</button>
+            <span class="fs-num" id="font-size">22</span>
+            <button id="font-up" aria-label="Increase font size">A+</button>
+          </div>
+          <button class="nav-btn" id="restart-btn" aria-label="Restart" style="width:auto;padding:0 14px;font-size:13px;">Restart</button>
+        </div>
       </div>
-    </div>
+
+      <div id="drill" class="drill" tabindex="0">
+        <span class="drill-hint">click here · then type</span>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat-tile"><div class="v" id="stat-wpm">0</div><div class="l">WPM</div></div>
+        <div class="stat-tile"><div class="v" id="stat-acc">100%</div><div class="l">Accuracy</div></div>
+        <div class="stat-tile"><div class="v" id="stat-err">0</div><div class="l">Errors</div></div>
+        <div class="stat-tile"><div class="v" id="stat-time">00:00</div><div class="l">Time</div></div>
+      </div>
+
+      <div id="keyboard" class="kbd"></div>
+    </section>
+
+    <!-- RIGHT COLUMN: Settings + Right hand -->
+    <aside class="side-panel">
+      <div class="pro-card">
+        <h3>Settings</h3>
+        <h4>Backspace Options</h4>
+        <label class="opt-row"><input type="radio" name="bs-mode" value="full" /><span>Full Backspace</span></label>
+        <label class="opt-row"><input type="radio" name="bs-mode" value="word" /><span>One Word Backspace</span></label>
+        <label class="opt-row"><input type="radio" name="bs-mode" value="off" checked /><span>Deactivate Backspace</span></label>
+
+        <h4 style="margin-top:18px;">Behaviour</h4>
+        <label class="opt-row"><input type="checkbox" id="opt-show-keyboard" checked /><span>Show Keyboard</span></label>
+        <label class="opt-row"><input type="checkbox" id="opt-play-sound" checked /><span>Play Sounds</span></label>
+        <label class="opt-row"><input type="checkbox" id="opt-move-on-error" checked /><span>Move on Error</span></label>
+      </div>
+
+      <div class="pro-card">
+        <h3>Right Hand</h3>
+        <div id="right-hand"></div>
+        <div class="hand-label">Right fingers</div>
+      </div>
+    </aside>
   </main>
 
-  <script>window.LEARN_CONFIG = { section: 'english', mode: 'learn' };</script>
+  <div id="complete-toast" class="complete-toast">✓ Lesson complete — try the next one!</div>
+
   <script src="../../js/api.js"></script>
-  <script src="../../js/learn.js"></script>
+  <script src="../../js/learn-pro.js"></script>
 </body>
 </html>
