@@ -92,7 +92,82 @@
     </aside>
   </main>
 
-  <div id="complete-toast" class="complete-toast">✓ Lesson complete — try the next one!</div>
+  <div id="complete-toast" class="complete-toast">✓ Lesson complete — opening result…</div>
+
+  <!-- Result modal (shown when typing completes) -->
+  <div id="result-modal" class="result-modal" role="dialog" aria-modal="true" aria-labelledby="result-title">
+    <div class="result-window">
+      <div class="result-header">
+        <div class="result-app">
+          <span class="result-app-icon">📋</span>
+          <span>Result &mdash; TypeMaster</span>
+        </div>
+        <div class="result-header-actions">
+          <button id="result-print" class="btn">Print</button>
+          <button id="result-close" class="result-close" aria-label="Close">&times;</button>
+        </div>
+      </div>
+      <div class="result-brand" id="result-title">TypeMaster Typing Tutor</div>
+      <div class="result-tab-row"><div class="result-tab active">Result</div></div>
+
+      <div class="result-body">
+        <h2 class="result-h2">Detailed Result as below</h2>
+
+        <div class="result-summary">
+          <div class="result-row"><span class="result-label">Test Duration</span><span class="result-colon">:</span><span class="result-value" id="r-duration">0 seconds</span></div>
+          <div class="result-row"><span class="result-label">Total Words Typed</span><span class="result-colon">:</span><span class="result-value" id="r-total-words">0</span></div>
+          <div class="result-row"><span class="result-label">Correct Words Typed</span><span class="result-colon">:</span><span class="result-value" id="r-correct-words">0</span></div>
+          <div class="result-row"><span class="result-label">Incorrect Words Typed</span><span class="result-colon">:</span><span class="result-value" id="r-incorrect-words">0</span></div>
+        </div>
+
+        <div class="result-method-title">
+          <strong>Method 1</strong>
+          <em>(one word = 5 characters or key strokes)</em>
+        </div>
+        <div class="result-method">
+          <div class="result-row"><span class="result-label">Net Speed</span><span class="result-colon">:</span><span class="result-value">
+            <span id="r1-net-wpm">0</span> words per minute<br/>
+            <span id="r1-net-ksm">0</span> key strokes per minute <em>(<span id="r1-net-ksh">0</span> per hour)</em>
+          </span></div>
+          <div class="result-row"><span class="result-label">Gross Speed</span><span class="result-colon">:</span><span class="result-value">
+            <span id="r1-gross-wpm">0</span> words per minute<br/>
+            <span id="r1-gross-ksm">0</span> key strokes per minute <em>(<span id="r1-gross-ksh">0</span> per hour)</em>
+          </span></div>
+          <div class="result-row"><span class="result-label">Accuracy</span><span class="result-colon">:</span><span class="result-value"><span id="r1-acc">0</span>%</span></div>
+          <div class="result-row"><span class="result-label">Backspace</span><span class="result-colon">:</span><span class="result-value"><span id="r1-bs">0</span> times</span></div>
+        </div>
+
+        <div class="result-method-title">
+          <strong>Method 2</strong>
+          <em>(one word = group of letters separated by space)</em>
+        </div>
+        <div class="result-method">
+          <div class="result-row"><span class="result-label">Net Speed</span><span class="result-colon">:</span><span class="result-value">
+            <span id="r2-net-wpm">0</span> words per minute<br/>
+            <span id="r2-net-ksm">0</span> key strokes per minute <em>(<span id="r2-net-ksh">0</span> per hour)</em>
+          </span></div>
+          <div class="result-row"><span class="result-label">Gross Speed</span><span class="result-colon">:</span><span class="result-value">
+            <span id="r2-gross-wpm">0</span> words per minute<br/>
+            <span id="r2-gross-ksm">0</span> key strokes per minute <em>(<span id="r2-gross-ksh">0</span> per hour)</em>
+          </span></div>
+          <div class="result-row"><span class="result-label">Accuracy</span><span class="result-colon">:</span><span class="result-value"><span id="r2-acc">0</span>%</span></div>
+          <div class="result-row"><span class="result-label">Backspace</span><span class="result-colon">:</span><span class="result-value"><span id="r2-bs">0</span> times</span></div>
+        </div>
+
+        <p class="result-note"><strong>Note:</strong> Key depressions, characters and key strokes are the same thing.</p>
+
+        <div class="result-typed" id="r-typed-block">
+          <div class="result-typed-title">Your typed text</div>
+          <div class="result-typed-text" id="r-typed"></div>
+        </div>
+      </div>
+
+      <div class="result-footer">
+        <button id="result-repeat" class="btn">Repeat</button>
+        <button id="result-next" class="btn btn-solid">Next &raquo;&raquo;</button>
+      </div>
+    </div>
+  </div>
 
   <script src="../../js/api.js"></script>
   <script src="../../js/learn-pro.js"></script>

@@ -109,6 +109,7 @@
     totalChars: 0,
     correctChars: 0,
     errors: 0,
+    backspaces: 0,
   };
 
   // ------------------------------------------------------------------
@@ -312,6 +313,7 @@
       e.preventDefault();
       if (state.bsMode === 'off') return;
       if (!state.typed.length) return;
+      state.backspaces++;
       if (state.bsMode === 'full') {
         state.typed = state.typed.slice(0, -1);
       } else if (state.bsMode === 'word') {
@@ -357,7 +359,107 @@
   function finish() {
     stopTimer();
     completeToast.classList.add('show');
-    setTimeout(() => completeToast.classList.remove('show'), 2500);
+    setTimeout(() => completeToast.classList.remove('show'), 1500);
+    setTimeout(() => showResult(), 600);
+  }
+
+  // ------------------------------------------------------------------
+  // Result modal
+  // ------------------------------------------------------------------
+  const resultModal     = document.getElementById('result-modal');
+  const resultPrintBtn  = document.getElementById('result-print');
+  const resultCloseBtn  = document.getElementById('result-close');
+  const resultRepeatBtn = document.getElementById('result-repeat');
+  const resultNextBtn   = document.getElementById('result-next');
+
+  function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+
+  function computeMethod2Words() {
+    // Compare typed vs target on a word-by-word basis (split on whitespace).
+    const t = state.target.split(/\s+/).filter(Boolean);
+    const u = state.typed.split(/\s+/).filter(Boolean);
+    const total = Math.max(u.length, 0);
+    let correct = 0;
+    for (let i = 0; i < u.length; i++) {
+      if (u[i] === t[i]) correct++;
+    }
+    return { total, correct, incorrect: total - correct };
+  }
+
+  function showResult() {
+    const seconds = Math.max(state.elapsed, 1);
+    const minutes = seconds / 60;
+
+    // ---- Method 1: 5 chars = 1 word ----
+    const grossKeystrokes = state.totalChars;
+    const netKeystrokes   = state.correctChars;
+    const m1GrossWpm = Math.round((grossKeystrokes / 5) / minutes);
+    const m1NetWpm   = Math.round((netKeystrokes   / 5) / minutes);
+    const m1GrossKsm = Math.round(grossKeystrokes / minutes);
+    const m1NetKsm   = Math.round(netKeystrokes   / minutes);
+    const m1Acc      = state.totalChars ? Math.round((state.correctChars / state.totalChars) * 100) : 0;
+
+    // ---- Method 2: word = group separated by whitespace ----
+    const m2 = computeMethod2Words();
+    const m2GrossWpm = Math.round(m2.total   / minutes);
+    const m2NetWpm   = Math.round(m2.correct / minutes);
+    // Keystroke metrics are the same (KSPM is character-based)
+    const m2GrossKsm = m1GrossKsm;
+    const m2NetKsm   = m1NetKsm;
+    const m2Acc      = m2.total ? Math.round((m2.correct / m2.total) * 100) : 0;
+
+    // ---- Top summary ----
+    setText('r-duration',         `${seconds} second${seconds === 1 ? '' : 's'}`);
+    setText('r-total-words',      m2.total);
+    setText('r-correct-words',    m2.correct);
+    setText('r-incorrect-words',  m2.incorrect);
+
+    // ---- Method 1 fields ----
+    setText('r1-net-wpm',   m1NetWpm);
+    setText('r1-net-ksm',   m1NetKsm);
+    setText('r1-net-ksh',   m1NetKsm * 60);
+    setText('r1-gross-wpm', m1GrossWpm);
+    setText('r1-gross-ksm', m1GrossKsm);
+    setText('r1-gross-ksh', m1GrossKsm * 60);
+    setText('r1-acc',       m1Acc);
+    setText('r1-bs',        state.backspaces);
+
+    // ---- Method 2 fields ----
+    setText('r2-net-wpm',   m2NetWpm);
+    setText('r2-net-ksm',   m2NetKsm);
+    setText('r2-net-ksh',   m2NetKsm * 60);
+    setText('r2-gross-wpm', m2GrossWpm);
+    setText('r2-gross-ksm', m2GrossKsm);
+    setText('r2-gross-ksh', m2GrossKsm * 60);
+    setText('r2-acc',       m2Acc);
+    setText('r2-bs',        state.backspaces);
+
+    // ---- Typed text with per-character correctness highlight ----
+    const typedBlock = document.getElementById('r-typed-block');
+    const typedEl    = document.getElementById('r-typed');
+    if (state.typed.length === 0) {
+      typedBlock.style.display = 'none';
+    } else {
+      typedBlock.style.display = '';
+      let html = '';
+      for (let i = 0; i < state.typed.length; i++) {
+        const tch = state.target[i];
+        const ich = state.typed[i];
+        const cls = ich === tch ? 'ok' : 'bad';
+        const display = ich === ' ' ? '\u00A0' : ich;
+        html += `<span class="${cls}">${escapeHtml(display)}</span>`;
+      }
+      typedEl.innerHTML = html;
+    }
+
+    resultModal.classList.add('show');
+  }
+
+  function hideResult() {
+    resultModal.classList.remove('show');
   }
 
   // ------------------------------------------------------------------
@@ -386,6 +488,7 @@
     state.totalChars = 0;
     state.correctChars = 0;
     state.errors = 0;
+    state.backspaces = 0;
     state.elapsed = 0;
     state.started = false;
     stopTimer();
@@ -434,6 +537,25 @@
     drillEl.addEventListener('click', () => drillEl.focus());
     drillEl.addEventListener('focus', () => drillEl.classList.add('focused'));
     drillEl.addEventListener('blur',  () => drillEl.classList.remove('focused'));
+
+    // Result modal
+    resultPrintBtn.addEventListener('click', () => window.print());
+    resultCloseBtn.addEventListener('click', hideResult);
+    resultRepeatBtn.addEventListener('click', () => {
+      hideResult();
+      setExercise(state.idx);
+    });
+    resultNextBtn.addEventListener('click', () => {
+      hideResult();
+      const target = Math.min(state.idx + 1, state.exercises.length - 1);
+      setExercise(target);
+    });
+    resultModal.addEventListener('click', (e) => {
+      if (e.target === resultModal) hideResult();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && resultModal.classList.contains('show')) hideResult();
+    });
   }
 
   // ------------------------------------------------------------------
