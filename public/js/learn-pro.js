@@ -176,17 +176,123 @@
     buildFingertips();
   }
 
-  // Build 9 fingertip indicators (4 left + 4 right + 1 thumb).
+  // Build the realistic SVG hands overlay AND the 9 fingertip pads.
   function buildFingertips() {
-    // Remove any previous
-    kbdEl.querySelectorAll('.fingertip').forEach((n) => n.remove());
+    // Remove anything we previously inserted
+    kbdEl.querySelectorAll('.fingertip, .kbd-hands').forEach((n) => n.remove());
+
+    // ------- SVG hands overlay (palm + fingers + thumb per side) -------
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('class', 'kbd-hands');
+    svg.setAttribute('viewBox', '0 0 1400 360');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.appendChild(buildHandGroup('left'));
+    svg.appendChild(buildHandGroup('right'));
+    kbdEl.appendChild(svg);
+
+    // ------- 9 fingertip "pads" that land on the active key -------
     FINGER_ORDER.forEach((f) => {
       const el = document.createElement('div');
       el.className = 'fingertip';
       el.dataset.finger = f;
-      el.textContent = FINGER_LABELS[f];
       kbdEl.appendChild(el);
     });
+  }
+
+  // Constructs one hand silhouette: 4 fingers + a thumb + a palm.
+  // Coordinates are in the SVG viewBox (1400 x 360). Left occupies the
+  // left half (0-700), right the right half (700-1400). Each finger has
+  // a data-finger attribute matching CHAR_MAP.f codes.
+  function buildHandGroup(side) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const g  = document.createElementNS(ns, 'g');
+    g.setAttribute('class', `hand hand-${side}`);
+
+    // x coordinates of the 4 fingertips for each side
+    // (pinky -> index ordering, then thumb separately)
+    const cfg = side === 'left'
+      ? { codes: ['L4', 'L3', 'L2', 'L1'], xs: [120, 235, 355, 475], thumbX: 580, thumbAngle: -32, palmCx: 320 }
+      : { codes: ['R4', 'R3', 'R2', 'R1'], xs: [1280, 1165, 1045, 925], thumbX: 820, thumbAngle: 32, palmCx: 1080 };
+
+    // Finger length (varies a bit so the silhouette looks human)
+    const lengths = [150, 185, 200, 180]; // pinky, ring, middle, index
+    const fingerWidth = 58;
+    const palmTopY = 220;
+
+    // Palm (rounded rect)
+    const palm = document.createElementNS(ns, 'path');
+    const px = cfg.palmCx;
+    palm.setAttribute('d', `
+      M ${px - 220},${palmTopY - 10}
+      Q ${px - 240},${palmTopY + 80} ${px - 200},${palmTopY + 130}
+      Q ${px - 100},${palmTopY + 175} ${px},${palmTopY + 175}
+      Q ${px + 100},${palmTopY + 175} ${px + 200},${palmTopY + 130}
+      Q ${px + 240},${palmTopY + 80} ${px + 220},${palmTopY - 10}
+      Z
+    `.trim());
+    palm.setAttribute('class', 'palm');
+    g.appendChild(palm);
+
+    // Knuckle line (subtle curve across palm to suggest knuckles)
+    const knuckle = document.createElementNS(ns, 'path');
+    knuckle.setAttribute('d', `M ${px - 200},${palmTopY + 30} Q ${px},${palmTopY + 5} ${px + 200},${palmTopY + 30}`);
+    knuckle.setAttribute('class', 'knuckle-line');
+    g.appendChild(knuckle);
+
+    // Fingers (4)
+    cfg.xs.forEach((x, i) => {
+      const len = lengths[i];
+
+      // Finger shape: rounded rectangle (rx = half width)
+      const finger = document.createElementNS(ns, 'rect');
+      finger.setAttribute('x', x - fingerWidth / 2);
+      finger.setAttribute('y', palmTopY - len);
+      finger.setAttribute('width', fingerWidth);
+      finger.setAttribute('height', len + 40); // extends into palm
+      finger.setAttribute('rx', fingerWidth / 2);
+      finger.setAttribute('class', 'finger');
+      finger.setAttribute('data-finger', cfg.codes[i]);
+      g.appendChild(finger);
+
+      // Fingernail
+      const nail = document.createElementNS(ns, 'ellipse');
+      nail.setAttribute('cx', x);
+      nail.setAttribute('cy', palmTopY - len + 16);
+      nail.setAttribute('rx', 18);
+      nail.setAttribute('ry', 11);
+      nail.setAttribute('class', 'nail');
+      g.appendChild(nail);
+    });
+
+    // Thumb (rotated capsule)
+    const thumb = document.createElementNS(ns, 'rect');
+    const tw = 70, th = 130;
+    thumb.setAttribute('x', cfg.thumbX - tw / 2);
+    thumb.setAttribute('y', palmTopY + 5 - th);
+    thumb.setAttribute('width', tw);
+    thumb.setAttribute('height', th + 50);
+    thumb.setAttribute('rx', tw / 2);
+    thumb.setAttribute('class', 'finger');
+    thumb.setAttribute('data-finger', 'TH');
+    thumb.setAttribute('transform', `rotate(${cfg.thumbAngle} ${cfg.thumbX} ${palmTopY + 30})`);
+    g.appendChild(thumb);
+
+    // Thumbnail
+    const tnail = document.createElementNS(ns, 'ellipse');
+    const ang = (cfg.thumbAngle * Math.PI) / 180;
+    const nailDist = th - 18;
+    const nx = cfg.thumbX + Math.sin(ang) * nailDist;
+    const ny = (palmTopY + 30) - Math.cos(ang) * nailDist;
+    tnail.setAttribute('cx', nx);
+    tnail.setAttribute('cy', ny);
+    tnail.setAttribute('rx', 16);
+    tnail.setAttribute('ry', 11);
+    tnail.setAttribute('transform', `rotate(${cfg.thumbAngle} ${nx} ${ny})`);
+    tnail.setAttribute('class', 'nail');
+    g.appendChild(tnail);
+
+    return g;
   }
 
   function highlightKeyboard(ch) {
@@ -247,11 +353,12 @@
   }
 
   function highlightFinger(ch) {
-    document.querySelectorAll('.hand-svg .finger.active').forEach((e) => e.classList.remove('active'));
+    document.querySelectorAll('.hand-svg .finger.active, .kbd-hands .finger.active').forEach((e) => e.classList.remove('active'));
     if (!ch) return;
     const map = CHAR_MAP[ch] || (ch === ' ' ? { f: 'TH' } : null);
     if (!map) return;
-    document.querySelectorAll(`.hand-svg .finger[data-finger="${map.f}"]`).forEach((e) => e.classList.add('active'));
+    const sel = `.hand-svg .finger[data-finger="${map.f}"], .kbd-hands .finger[data-finger="${map.f}"]`;
+    document.querySelectorAll(sel).forEach((e) => e.classList.add('active'));
   }
 
   // ------------------------------------------------------------------
@@ -279,9 +386,14 @@
     el.style.setProperty('--tx', c.x + 'px');
     el.style.setProperty('--ty', c.y + 'px');
     el.classList.toggle('active', !!isActive);
+    // Only the active fingertip pad is visually shown — others fade out so
+    // the hand silhouette below carries the visual weight.
+    el.style.opacity = isActive ? '1' : '0';
   }
 
   // Send each finger to its home; the active finger goes to the target key.
+  // Only the active fingertip pad is rendered (others are hidden); the SVG
+  // hand silhouettes already convey "fingers resting on home row".
   function repositionFingertips(ch) {
     if (!state.handsOnKbd) return;
     const map = CHAR_MAP[ch] || (ch === ' ' ? { f: 'TH', r: 4, k: 2 } : null);
