@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>English · Typing Test (Pro)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/base.css" />
+  <link rel="stylesheet" href="../../css/test-pro.css" />
+</head>
+<body class="tp-body">
+
+  <!-- ================== NAV ================== -->
+  <nav class="tp-nav">
+    <a href="../../index.html" class="tp-brand">
+      <span class="tp-brand-mark">T</span>TypeMaster<span class="tp-brand-tag">Pro</span>
+    </a>
+    <div class="tp-nav-right">
+      <a href="../../index.html" class="tp-nav-link">Home</a>
+      <a href="learn.html" class="tp-nav-link">Learn</a>
+      <a href="test.html" class="tp-nav-link">Classic Test</a>
+    </div>
+  </nav>
+
+  <!-- ================== APP ================== -->
+  <main class="tp-app" id="tpApp">
+
+    <!-- LEFT: Font panel -->
+    <aside class="tp-left">
+      <div class="tp-card tp-font-card">
+        <div class="tp-card-title">Font</div>
+        <label class="tp-field">
+          <span class="tp-field-lbl">Family</span>
+          <select id="tpFontFamily" class="tp-input">
+            <option value="'JetBrains Mono', ui-monospace, monospace" selected>JetBrains Mono</option>
+            <option value="'Inter', system-ui, sans-serif">Inter</option>
+            <option value="Georgia, 'Times New Roman', serif">Georgia</option>
+            <option value="'Courier New', monospace">Courier New</option>
+            <option value="Verdana, sans-serif">Verdana</option>
+          </select>
+        </label>
+
+        <label class="tp-toggle">
+          <input type="checkbox" id="tpBold" />
+          <span class="tp-toggle-track"><span class="tp-toggle-dot"></span></span>
+          <span class="tp-toggle-label">Bold passage</span>
+        </label>
+
+        <div class="tp-divider"></div>
+        <div class="tp-card-subtitle">Quick stats</div>
+        <div class="tp-stats">
+          <div class="tp-stat"><div class="tp-stat-num" id="tpWpm">0</div><div class="tp-stat-lbl">WPM</div></div>
+          <div class="tp-stat"><div class="tp-stat-num" id="tpAcc">100%</div><div class="tp-stat-lbl">Accuracy</div></div>
+          <div class="tp-stat tp-stat-warn"><div class="tp-stat-num" id="tpErr">0</div><div class="tp-stat-lbl">Errors</div></div>
+          <div class="tp-stat tp-stat-time"><div class="tp-stat-num" id="tpTime">10:00</div><div class="tp-stat-lbl">Remaining</div></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER: Test area -->
+    <section class="tp-center">
+
+      <!-- Mode bar -->
+      <div class="tp-mode-bar">
+        <button id="tpPrintBtn" class="tp-mode-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Printout Mode
+        </button>
+        <a href="#add" id="tpAddEx" class="tp-add-link">+ Add New Exercise</a>
+        <button id="tpExamBtn" class="tp-mode-btn tp-mode-btn-accent">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 12l2 2 4-4"/></svg>
+          Exam Mode
+        </button>
+      </div>
+
+      <!-- Passage display -->
+      <div class="tp-passage-wrap">
+        <div id="tpPassage" class="tp-passage" tabindex="0"></div>
+      </div>
+
+      <!-- Bar between passage and input -->
+      <div class="tp-control-bar">
+        <div class="tp-cb-group">
+          <span class="tp-cb-lbl">Duration</span>
+          <select id="tpDuration" class="tp-input tp-input-sm">
+            <option value="60">1 Minute</option>
+            <option value="120">2 Minutes</option>
+            <option value="300">5 Minutes</option>
+            <option value="600" selected>10 Minutes</option>
+            <option value="900">15 Minutes</option>
+            <option value="1200">20 Minutes</option>
+            <option value="1800">30 Minutes</option>
+          </select>
+        </div>
+
+        <div class="tp-cb-status" id="tpStatus">Select test duration and start typing. Timer starts automatically.</div>
+
+        <div class="tp-cb-group">
+          <select id="tpExerciseSelect" class="tp-input tp-input-sm"></select>
+          <button id="tpNextEx" class="tp-icon-btn" title="Next exercise">»</button>
+        </div>
+
+        <div class="tp-cb-group tp-fontsize">
+          <button id="tpFontDown" class="tp-icon-btn">A−</button>
+          <span id="tpFontVal" class="tp-fontsize-val">18</span>
+          <button id="tpFontUp" class="tp-icon-btn">A+</button>
+        </div>
+      </div>
+
+      <!-- Typing input -->
+      <textarea id="tpInput"
+                class="tp-input-area"
+                placeholder="Click here and start typing — the timer starts on your first keystroke."
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"></textarea>
+
+      <!-- Bottom action row -->
+      <div class="tp-actions">
+        <button id="tpRestart" class="tp-btn">Restart</button>
+        <button id="tpSubmit" class="tp-btn tp-btn-primary">Submit &amp; See Result</button>
+      </div>
+    </section>
+
+    <!-- RIGHT: Settings -->
+    <aside class="tp-right">
+      <div class="tp-card tp-settings">
+        <div class="tp-settings-title">Settings</div>
+
+        <!-- BACKSPACE -->
+        <fieldset class="tp-fset">
+          <legend>Backspace Options</legend>
+          <div class="tp-seg" data-group="backspace">
+            <label class="tp-seg-item"><input type="radio" name="backspace" value="full"/><span>Full</span></label>
+            <label class="tp-seg-item"><input type="radio" name="backspace" value="oneword"/><span>One Word</span></label>
+            <label class="tp-seg-item"><input type="radio" name="backspace" value="disabled" checked/><span>Disabled</span></label>
+          </div>
+        </fieldset>
+
+        <!-- HIGHLIGHT -->
+        <fieldset class="tp-fset">
+          <legend>Highlight Options</legend>
+          <div class="tp-seg tp-seg-grid" data-group="highlight">
+            <label class="tp-seg-item"><input type="radio" name="highlight" value="word"/><span>Word</span></label>
+            <label class="tp-seg-item"><input type="radio" name="highlight" value="word-error" checked/><span>Word + Error</span></label>
+            <label class="tp-seg-item"><input type="radio" name="highlight" value="none"/><span>None</span></label>
+            <label class="tp-seg-item"><input type="radio" name="highlight" value="letter"/><span>Letter</span></label>
+          </div>
+        </fieldset>
+
+        <!-- SCROLLBAR -->
+        <fieldset class="tp-fset">
+          <legend>Scrollbar Options</legend>
+          <label class="tp-toggle">
+            <input type="checkbox" id="tpShowScroll" />
+            <span class="tp-toggle-track"><span class="tp-toggle-dot"></span></span>
+            <span class="tp-toggle-label">Show Scrollbar</span>
+          </label>
+          <label class="tp-toggle">
+            <input type="checkbox" id="tpAutoScroll" checked />
+            <span class="tp-toggle-track"><span class="tp-toggle-dot"></span></span>
+            <span class="tp-toggle-label">Auto Scroll</span>
+          </label>
+        </fieldset>
+
+        <!-- PARAGRAPH -->
+        <fieldset class="tp-fset">
+          <legend>Paragraph Settings</legend>
+          <label class="tp-toggle">
+            <input type="checkbox" id="tpWordLimit" />
+            <span class="tp-toggle-track"><span class="tp-toggle-dot"></span></span>
+            <span class="tp-toggle-label">Apply Word Limit</span>
+          </label>
+          <div class="tp-stepper">
+            <button class="tp-icon-btn" id="tpWlDown">−</button>
+            <input type="number" id="tpWlVal" class="tp-input tp-input-sm" min="50" max="1500" value="500" disabled/>
+            <button class="tp-icon-btn" id="tpWlUp">+</button>
+          </div>
+          <div class="tp-help">min 50, max 1500</div>
+        </fieldset>
+
+        <!-- WORD PROCESSING -->
+        <fieldset class="tp-fset">
+          <legend>Word Processing Mode <span class="tp-tag">NTPC / SSC / Court</span></legend>
+          <label class="tp-toggle">
+            <input type="checkbox" id="tpWordProc" checked />
+            <span class="tp-toggle-track"><span class="tp-toggle-dot"></span></span>
+            <span class="tp-toggle-label">Word Processor (SSC, Court, Steno)</span>
+          </label>
+          <label class="tp-toggle">
+            <input type="checkbox" id="tpAllowPara" />
+            <span class="tp-toggle-track"><span class="tp-toggle-dot"></span></span>
+            <span class="tp-toggle-label">Allow Paragraphs</span>
+          </label>
+          <label class="tp-toggle">
+            <input type="checkbox" id="tpAllowTabs" />
+            <span class="tp-toggle-track"><span class="tp-toggle-dot"></span></span>
+            <span class="tp-toggle-label">Allow Tabs</span>
+          </label>
+        </fieldset>
+
+        <button id="tpResetSettings" class="tp-btn tp-btn-ghost tp-w100">Reset all settings</button>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Result Modal -->
+  <div id="tpResultModal" class="tp-modal">
+    <div class="tp-modal-card">
+      <h2>Test Complete</h2>
+      <div class="tp-result-big" id="tpRWpm">0</div>
+      <div class="tp-result-sub">Words per minute</div>
+      <div class="tp-result-row">
+        <div><strong id="tpRAcc">0%</strong><span>Accuracy</span></div>
+        <div><strong id="tpRErr">0</strong><span>Errors</span></div>
+        <div><strong id="tpRChars">0</strong><span>Characters</span></div>
+      </div>
+      <div class="tp-result-actions">
+        <button id="tpRClose" class="tp-btn">Close</button>
+        <button id="tpRRetry" class="tp-btn tp-btn-primary">Try Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Exercise Modal -->
+  <div id="tpAddModal" class="tp-modal">
+    <div class="tp-modal-card">
+      <h2>Add New Exercise</h2>
+      <p class="tp-help">Saves to your browser. Visible only on this device.</p>
+      <label class="tp-field"><span class="tp-field-lbl">Title</span>
+        <input id="tpAddTitle" class="tp-input" placeholder="My custom passage"/>
+      </label>
+      <label class="tp-field"><span class="tp-field-lbl">Content</span>
+        <textarea id="tpAddContent" class="tp-input" rows="6" placeholder="Paste or type the passage..."></textarea>
+      </label>
+      <div class="tp-result-actions">
+        <button id="tpACancel" class="tp-btn">Cancel</button>
+        <button id="tpASave" class="tp-btn tp-btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>window.TEST_CONFIG = { section: 'english', mode: 'test' };</script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/test-pro.js"></script>
+</body>
+</html>
