@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>हिंदी (KrutiDev) · Learn Typing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/base.css" />
+  <link rel="stylesheet" href="../../css/learn.css" />
+  <link rel="stylesheet" href="../../css/hindi-krutidev.css" />
+</head>
+<body class="theme-krutidev-page">
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../../index.html" class="brand"><span class="brand-mark">अ</span>TypeMaster</a>
+      <div class="nav-links">
+        <a href="../../index.html">Home</a>
+        <a href="test.html">Take Test →</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="exercise-shell">
+    <div class="exercise-head">
+      <div>
+        <h1>हिंदी टाइपिंग अभ्यास <span class="layout-badge" style="background:#fef3c7;color:#92400e;">KrutiDev / DevLys</span></h1>
+        <div class="subtitle">Practice using the legacy KrutiDev / DevLys keyboard mapping (font-based).</div>
+      </div>
+      <div class="lesson-pick">
+        <label class="label" style="margin:0;">पाठ:</label>
+        <select id="lesson-select"></select>
+        <span class="label" style="margin:0;">शुद्धता: <span id="accuracy" style="color:var(--brand);font-weight:700;">100%</span></span>
+      </div>
+    </div>
+
+    <div class="learn-card">
+      <div class="progress-bar"><span id="progress-bar"></span></div>
+      <div id="target" class="target-text"></div>
+      <input id="input" class="typing-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="यहाँ टाइप करें… (KrutiDev font installed required for legacy glyphs)" />
+      <div class="next-key-hint">
+        <span class="key" id="next-key">अ</span>
+        <span class="label">अगला अक्षर / Next character</span>
+      </div>
+      <div class="legacy-note">
+        Tip: KrutiDev is a non-Unicode legacy font. For best display install the
+        <strong>Kruti Dev 010</strong> font on your computer. Without it, Devanagari fallback glyphs may show different shapes for the same keystrokes.
+      </div>
+      <div class="controls">
+        <button id="reset-btn" class="btn">पुनः आरम्भ करें</button>
+        <a href="test.html" class="btn btn-solid">परीक्षा दें →</a>
+      </div>
+    </div>
+  </main>
+
+  <script>window.LEARN_CONFIG = { section: 'hindi-krutidev', mode: 'learn' };</script>
+  <script src="../../js/api.js"></script>
+  <script src="../../js/learn.js"></script>
+</body>
+</html>

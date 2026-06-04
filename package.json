@@ -1,0 +1,9 @@
+{
+  "name": "typing-website",
+  "version": "1.0.0",
+  "description": "Multi-language typing learning website (zero external dependencies)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

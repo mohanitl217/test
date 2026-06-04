@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin · TypeMaster</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="brand"><span class="brand-mark">T</span>TypeMaster <span style="font-size:11px;background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;margin-left:8px;">ADMIN</span></a>
+      <div class="nav-links">
+        <a href="/">Site</a>
+        <button id="logout" class="btn-ghost">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-shell">
+    <aside class="admin-side">
+      <h2>Manage</h2>
+      <a class="nav-link active" data-view="users">Users</a>
+      <a class="nav-link" data-view="exercises">Exercises</a>
+    </aside>
+
+    <main class="admin-main">
+      <!-- USERS VIEW -->
+      <section id="view-users">
+        <h1>Users</h1>
+        <p class="subtitle">View, promote and remove user accounts.</p>
+        <div class="panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th><th>Email</th><th>Role</th><th>Created</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"><tr><td colspan="5">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- EXERCISES VIEW -->
+      <section id="view-exercises" hidden>
+        <h1>Exercises</h1>
+        <p class="subtitle">Add learning content and tests for each section.</p>
+
+        <div class="panel">
+          <h3 style="margin:0 0 12px;font-size:16px;">Add new exercise</h3>
+          <form id="add-exercise" class="row-form">
+            <div>
+              <label class="label">Section</label>
+              <select name="section" required>
+                <option value="english">English</option>
+                <option value="hindi-krutidev">Hindi (KrutiDev)</option>
+                <option value="hindi-mangal-gail">Hindi Mangal — GAIL</option>
+                <option value="hindi-mangal-inscript">Hindi Mangal — INSCRIPT</option>
+                <option value="hindi-mangal-cbi">Hindi Mangal — CBI</option>
+              </select>
+            </div>
+            <div>
+              <label class="label">Mode</label>
+              <select name="mode" required>
+                <option value="learn">Learn</option>
+                <option value="test">Test</option>
+                <option value="number">Number</option>
+              </select>
+            </div>
+            <div>
+              <label class="label">Title</label>
+              <input class="input" name="title" required placeholder="e.g. Lesson 1" />
+            </div>
+            <div>
+              <label class="label">Content</label>
+              <textarea class="input" name="content" required placeholder="The text to type"></textarea>
+            </div>
+            <button class="btn btn-solid" type="submit">Add</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="tabs-bar" id="ex-tabs">
+            <button data-section="" class="active">All</button>
+            <button data-section="english">English</button>
+            <button data-section="hindi-krutidev">KrutiDev</button>
+            <button data-section="hindi-mangal-gail">Mangal · GAIL</button>
+            <button data-section="hindi-mangal-inscript">Mangal · INSCRIPT</button>
+            <button data-section="hindi-mangal-cbi">Mangal · CBI</button>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Title</th><th>Section</th><th>Mode</th><th>Content (preview)</th><th></th></tr>
+            </thead>
+            <tbody id="ex-tbody"><tr><td colspan="5">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="js/api.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign up · TypeMaster</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="brand"><span class="brand-mark">T</span>TypeMaster</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="login.html" class="btn-ghost">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Create an account</h1>
+      <p class="subtitle">Save your progress and unlock test history.</p>
+
+      <form id="signup-form">
+        <label class="label">Name</label>
+        <input class="input" type="text" name="name" required placeholder="Your full name" />
+
+        <label class="label">Email</label>
+        <input class="input" type="email" name="email" required placeholder="you@example.com" />
+
+        <label class="label">Password</label>
+        <input class="input" type="password" name="password" minlength="6" required placeholder="At least 6 characters" />
+
+        <div class="error-msg" id="error"></div>
+        <button class="btn btn-solid" type="submit">Create account</button>
+      </form>
+
+      <p class="auth-foot">
+        Already have an account? <a href="login.html">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

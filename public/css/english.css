@@ -1,0 +1,16 @@
+/* English section theme - cool blues */
+.theme-english-page {
+  --brand: #2563eb;
+  --brand-2: #06b6d4;
+}
+.theme-english-page .target-text {
+  background: linear-gradient(180deg, #f0f9ff, #ffffff);
+  border-color: #bae6fd;
+}
+.theme-english-page .learn-card,
+.theme-english-page .test-card {
+  border-top: 5px solid #2563eb;
+}
+.theme-english-page .nav-inner .brand-mark {
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+}

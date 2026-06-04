@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login · TypeMaster</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="brand"><span class="brand-mark">T</span>TypeMaster</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="signup.html" class="btn-primary">Sign up</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1>Welcome back</h1>
+      <p class="subtitle">Sign in to track your typing progress.</p>
+
+      <div class="tab-row">
+        <button class="active" data-mode="user">User</button>
+        <button data-mode="admin">Admin</button>
+      </div>
+
+      <form id="login-form">
+        <label class="label">Email</label>
+        <input class="input" type="email" name="email" required placeholder="you@example.com" />
+
+        <label class="label">Password</label>
+        <input class="input" type="password" name="password" required placeholder="••••••••" />
+
+        <div class="error-msg" id="error"></div>
+        <button class="btn btn-solid" type="submit">Sign in</button>
+      </form>
+
+      <p class="auth-foot">
+        New here? <a href="signup.html">Create an account</a>
+      </p>
+      <p class="auth-foot" style="font-size:12px;opacity:.7;">
+        Demo admin: admin@typing.local / admin123
+      </p>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

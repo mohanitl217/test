@@ -1,0 +1,57 @@
+/* Mangal Unicode theme - fresh greens with a clean Devanagari feel */
+.theme-mangal-page {
+  --brand: #059669;
+  --brand-2: #6366f1;
+}
+.theme-mangal-page .target-text {
+  font-family: 'Noto Sans Devanagari', 'Mangal', system-ui, sans-serif;
+  font-size: clamp(22px, 2.6vw, 28px);
+  line-height: 2;
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #064e3b;
+}
+.theme-mangal-page .typing-input {
+  font-family: 'Noto Sans Devanagari', 'Mangal', system-ui, sans-serif;
+  font-size: 22px;
+}
+.theme-mangal-page .learn-card,
+.theme-mangal-page .test-card {
+  border-top: 5px solid #059669;
+}
+.theme-mangal-page .nav-inner .brand-mark {
+  background: linear-gradient(135deg, #059669, #6366f1);
+}
+.theme-mangal-page .layout-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #d1fae5;
+  color: #065f46;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.theme-mangal-page .layout-badge.inscript { background: #ddd6fe; color: #5b21b6; }
+.theme-mangal-page .layout-badge.cbi      { background: #fed7aa; color: #9a3412; }
+
+/* Distinct learn-card accent per layout to make the three sub-pages visually different */
+.theme-mangal-page.layout-gail .learn-card,
+.theme-mangal-page.layout-gail .test-card { border-top-color: #059669; }
+
+.theme-mangal-page.layout-inscript .learn-card,
+.theme-mangal-page.layout-inscript .test-card { border-top-color: #7c3aed; }
+.theme-mangal-page.layout-inscript .target-text {
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+  color: #4c1d95;
+}
+
+.theme-mangal-page.layout-cbi .learn-card,
+.theme-mangal-page.layout-cbi .test-card { border-top-color: #ea580c; }
+.theme-mangal-page.layout-cbi .target-text {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #7c2d12;
+}

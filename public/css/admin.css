@@ -1,0 +1,78 @@
+.admin-shell { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); }
+.admin-side {
+  background: var(--bg);
+  color: var(--text-invert);
+  padding: 24px 16px;
+}
+.admin-side h2 { margin: 0 0 24px; font-size: 16px; opacity: .7; text-transform: uppercase; letter-spacing: 0.1em; }
+.admin-side a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,.75);
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+.admin-side a:hover, .admin-side a.active {
+  background: rgba(255,255,255,.08);
+  color: white;
+}
+
+.admin-main { padding: 32px; background: var(--surface-alt); }
+.admin-main h1 { margin: 0 0 4px; font-size: 26px; font-weight: 800; }
+.admin-main .subtitle { color: var(--text-muted); margin: 0 0 24px; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+th { font-weight: 700; font-size: 13px; color: var(--text-muted); background: var(--surface-alt); }
+tr:last-child td { border-bottom: none; }
+.role-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.role-admin { background: #fef3c7; color: #92400e; }
+.role-user { background: #e0e7ff; color: #3730a3; }
+
+.row-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 2fr auto;
+  gap: 10px;
+  align-items: end;
+}
+.row-form textarea { min-height: 60px; resize: vertical; }
+@media (max-width: 900px) {
+  .admin-shell { grid-template-columns: 1fr; }
+  .admin-side { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; }
+  .admin-side h2 { width: 100%; margin-bottom: 4px; }
+  .admin-side a { margin: 0; }
+  .admin-main { padding: 20px; }
+  .row-form { grid-template-columns: 1fr 1fr; }
+  .row-form textarea, .row-form button { grid-column: 1 / -1; }
+  table { font-size: 13px; }
+  th, td { padding: 8px; }
+}
+
+.tabs-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.tabs-bar button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.tabs-bar button.active { background: var(--brand); color: white; border-color: var(--brand); }
